@@ -42,7 +42,7 @@ function spawnCollectibles(collectibles){
 var placeOnCircle = function(object, circle, offset){
 	object.x = circle.cx + circle.r * Math.sin(circle.theta + offset);
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
-	console.log(object);
+	//console.log(object);
 };
 
 
@@ -53,12 +53,41 @@ function drawEntity(context, drawable){
 
 function createWarriors(array, num){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
-									   Math.floor(Math.random() * canvas.height) +1,
-									   10, 10);
+	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10);
 	 	warrior.color ="red";
 	 	array.push(warrior);
 	 }
+}
+
+function createEnemy(array, scene){
+	var enemy = new Splat.Entity(50, 100, 25, 25);
+	enemy.type = "";
+	enemy.move = function(){
+		this.target();
+		this.x += this.speedx;
+		this.y += this.speedy;
+	};
+	enemy.target = function(){
+		var targetx = scene.player.x + scene.player.width/2;
+		var targety = scene.player.y + scene.player.height/2;
+		this.speed = 1;
+		var distance =  Math.sqrt( Math.pow((targetx - this.x), 2) + Math.pow((targety - this.y),2));
+		if( distance < 500){
+			this.speedx = Math.abs(targetx - this.x)/distance * this.speed;
+			this.speedy = Math.abs(targety - this.y)/distance * this.speed;
+			if (targetx - this.x < 0){
+				this.speedx *= -1;
+			}
+			if (targety - this.y < 0){
+				this.speedy *= -1;
+			}
+		}else{
+			this.speedx = 0;
+			this.speedy = 0;
+		}
+	};
+	enemy.color = "yellow";
+	array.push(enemy);
 }
 
 game.scenes.add("title", new Splat.Scene(canvas, function() {
@@ -88,7 +117,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.collectibles.forEach(function() {
         scene.collectiblesGotten.push(false);
     });
+
+    scene.enemies = [];
     
+    createEnemy(scene.enemies, scene);
+
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
 	scene.player.color = "green";
 
@@ -187,6 +220,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
     }
+
+    for( i = 0; i < scene.enemies.length; i++ ){
+    	scene.enemies[i].move();
+    }
+
 }, function(context) {
 	// draw
 	var scene = this;
@@ -205,6 +243,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 	for(var x = 0; x< scene.warriors.length; x++){
 		drawEntity(context, scene.warriors[x]);
+	}
+
+	for(x = 0; x < scene.enemies.length; x++){
+		drawEntity(context, scene.enemies[x]);
 	}
     
     context.fillStyle = "#ffffff";
