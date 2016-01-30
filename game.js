@@ -67,8 +67,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.collectibles.push(scene.collectibleY);
     spawnCollectibles(scene.collectibles);
     
-    scene.player.carryingItem = false;
-    scene.player.itemCarried = -1;
     scene.collectiblesGotten = [];
     scene.collectibles.forEach(function() {
         scene.collectiblesGotten.push(false);
@@ -82,6 +80,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.player.minimumSpeed = 0.01;
     scene.player.workers = 0;
     scene.player.warriors = 0;
+    scene.player.carryingItem = false;
+    scene.player.itemCarried = -1;
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
     scene.hive.color = "red";
@@ -111,7 +111,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var scene = this;
     scene.player.actualSpeed = scene.player.baseSpeed - (scene.player.baseSpeed * (scene.player.workers + scene.player.warriors) * 0.01);
     if (scene.player.actualSpeed < 0){
-        scene.player.actualSpeed = scene.player.minimum;
+        scene.player.actualSpeed = scene.player.minimumSpeed;
     }
     
 	if (game.keyboard.isPressed("left")) {
@@ -150,7 +150,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         scene.timers.spawnbees.start();
     }
     
-    //scene.collectibles.forEach(function(element, i) {
     for (var i=0; i<scene.collectibles.length; i++){
         if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.player.carryingItem){
             scene.player.carryingItem = true;
