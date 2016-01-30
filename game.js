@@ -24,13 +24,10 @@ var game = new Splat.Game(canvas, manifest);
 // 	};
 // };
 
-var placeOnCircle = function(object, mouse, circle){
-	var cx = circle.x + circle.width/2;
-	var cy = circle.y + circle.width/2;
-	var theta = Math.atan2(mouse.x-cx, mouse.y-cy);
-	console.log(theta, theta + Math.PI/180);
-	object.x = cx + circle.r * Math.sin(theta);
-	object.y = cy + circle.r * Math.cos(theta);
+var placeOnCircle = function(object, circle, offset){
+	object.x = circle.cx + circle.r * Math.sin(circle.theta + offset);
+	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
+	console.log(object);
 };
 
 function drawEntity(context, drawable){
@@ -53,6 +50,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
 	scene.player.color = "green";
 	scene.player.r = 100;
+	scene.player.theta = 0;
+	scene.player.getTheta = function(){
+		this.cx = this.x + this.width/2;
+		this.cy = this.y + this.height/2;
+		this.theta = Math.atan2(game.mouse.x-this.cx, game.mouse.y-this.cy);
+	};
 	scene.warriors = [];
 	 for(var x = 0; x < 5 ; x++){
 	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
@@ -81,8 +84,20 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		scene.player.y += 1;
 	}
 
+	scene.player.getTheta();
+	var count = 0;
 	for(var x = 0; x< scene.warriors.length; x++){
-		placeOnCircle(scene.warriors[x], game.mouse, scene.player);
+		//console.log(x);
+		if(x === 0){
+		placeOnCircle(scene.warriors[x], scene.player, x);
+		}
+		else if((x % 2) === 1){
+			count++;
+			placeOnCircle(scene.warriors[x], scene.player, (Math.PI/22.5)*count);
+		}
+		else{
+			placeOnCircle(scene.warriors[x], scene.player, (Math.PI/22.5)* -count);
+		}
 	}
     
     if (scene.timers.spawnbees.expired()){
