@@ -50,6 +50,16 @@ function drawEntity(context, drawable){
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
 }
 
+function createWarriors(array, num){
+    for(var x = 0; x < num ; x++){
+	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
+									   Math.floor(Math.random() * canvas.height) +1,
+									   10, 10);
+	 	warrior.color ="red";
+	 	array.push(warrior);
+	 }
+}
+
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	//init
 	var scene =this;
@@ -97,13 +107,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.theta = Math.atan2(game.mouse.x-this.cx, game.mouse.y-this.cy);
 	};
 	scene.warriors = [];
-	 for(var x = 0; x < 5 ; x++){
-	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
-									   Math.floor(Math.random() * canvas.height) +1,
-									   10, 10);
-	 	warrior.color ="red";
-	 	scene.warriors.push(warrior);
-	 }
+	createWarriors(scene.warriors, 5);
 	//scene.warriors.color = "red";
 
 }, function() {
@@ -161,6 +165,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     if (scene.player.collides(scene.hive)){
         scene.player.workers += scene.hive.workers;
         scene.player.warriors += scene.hive.warriors;
+        createWarriors(scene.warriors, scene.hive.warriors);
         scene.hive.workers = 0;
         scene.hive.warriors = 0;
         
