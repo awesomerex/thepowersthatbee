@@ -31,7 +31,7 @@ function spawnCollectibles(collectibles){
 }
 
 // var generateWarrior = function(x, y){
-// 	var w = new Splat.Entity(x, y, 10, 10);
+// 	var w = new Splat.AnimatedEntity(x, y, 10, 10);
 // 	w.color = "red";
 // 	w.attached = false;
 // 	w.followMouse = function(){
@@ -50,16 +50,18 @@ function drawEntity(context, drawable){
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
 }
 
-function createWarriors(array, num){
+function createWarriors(array, num, player){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10);
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, null, 0,0);
 	 	warrior.color ="red";
+	 	warrior.type = "warrior";
 	 	array.push(warrior);
 	 }
+	 player.warriors = array.length;
 }
 
 function createEnemy(array, scene){
-	var enemy = new Splat.Entity(50, 100, 25, 25);
+	var enemy = new Splat.AnimatedEntity(50, 100, 25, 25, null, 0,0);
 	enemy.type = "";
 	enemy.move = function(){
 		this.target();
@@ -86,6 +88,19 @@ function createEnemy(array, scene){
 		}
 	};
 	enemy.color = "yellow";
+	enemy.collision = function(){
+		this.health --;
+		console.log("enemy", this.health);
+	};
+	enemy.update = function(){
+		if(this.health <= 0){
+			this.delete = true;
+		}
+		this.target();
+		this.move();
+	};
+	enemy.delete = false;
+	enemy.health = 30;
 	array.push(enemy);
 }
 
@@ -102,10 +117,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.timers.spawnbees.start();
     
     scene.collectibles = [];
-    scene.collectibleX = new Splat.Entity(0, 0, 50, 50);
+    scene.collectibleX = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
 	scene.collectibleX.color = "blue";
     scene.collectibleX.cost = 20;
-    scene.collectibleY = new Splat.Entity(0, 0, 50, 50);
+    scene.collectibleY = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
 	scene.collectibleY.color = "aqua";
     scene.collectibleY.cost = 30;
     scene.collectibles.push(scene.collectibleX);
@@ -121,7 +136,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     createEnemy(scene.enemies, scene);
 
-	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, null, 0,0);
 	scene.player.color = "green";
 
     scene.player.baseSpeed = 3;
@@ -132,7 +147,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.player.carryingItem = false;
     scene.player.itemCarried = -1;
     
-    scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
+    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 50, 50, null, 0,0);
     scene.hive.color = "red";
     scene.hive.workers = 0;
     scene.hive.warriors = 0;
@@ -146,8 +161,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.theta = Math.atan2(game.mouse.x-this.cx, game.mouse.y-this.cy);
 	};
 	scene.warriors = [];
-	createWarriors(scene.warriors, 5);
-	//scene.warriors.color = "red";
+	createWarriors(scene.warriors, 5, scene.player);
 
 }, function() {
 	// simulation
@@ -207,7 +221,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     if (scene.player.collides(scene.hive)){
         scene.player.workers += scene.hive.workers;
         scene.player.warriors += scene.hive.warriors;
-        createWarriors(scene.warriors, scene.hive.warriors);
+        createWarriors(scene.warriors, scene.hive.warriors, scene.player);
         scene.hive.workers = 0;
         scene.hive.warriors = 0;
         
@@ -217,8 +231,23 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         }
     }
 
+    //enemies update loop
     for( i = 0; i < scene.enemies.length; i++ ){
-    	scene.enemies[i].move();
+    	console.log("enemies update loop");
+    	if(scene.enemies[i].collides(scene.player)){
+    		console.log("administrator bee hit");
+    	}
+    	for( x = 0; x < scene.warriors.length; x++){
+    		if(scene.enemies[i].collides(scene.warriors[x]) &&
+    			scene.enemies[i].health > 0){
+    			scene.enemies[i].collision();
+    			scene.warriors.splice(x, 1);
+    		}
+    	}
+    	scene.enemies[i].update();
+    	if(scene.enemies[i].delete === true){
+    		scene.enemies.splice(i,1);
+    	}
     }
 
 }, function(context) {
