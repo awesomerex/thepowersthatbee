@@ -57,8 +57,18 @@ function createWarriors(array, num, player){
 	 	warrior.color ="red";
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
+        player.warriors++;
 	 }
-	 player.warriors = array.length;
+}
+
+function removeWarriors(array, num, player){
+    if (array.length >= num){
+        array.splice(0,num);
+        player.warriors--;
+    }
+    else{
+        console.log("Tried to remove more warriors than there are");
+    }
 }
 
 function createEnemy(array, scene){
@@ -148,9 +158,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 50, 50, null, 0,0);
     scene.hive.color = "red";
-    scene.hive.workers = 0;
-    scene.hive.warriors = 0;
-
 
 	scene.player.r = 100;
 	scene.player.theta = 0;
@@ -164,7 +171,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.hive.color = "red";
     
 	scene.warriors = [];
-	createWarriors(scene.warriors, 5, scene.player);
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
@@ -191,12 +197,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
     if (game.keyboard.consumePressed("q")) {
         if (scene.inHive){
-		  scene.player.warriors++;
-          createWarriors(scene.warriors, 1);
+          createWarriors(scene.warriors, 1, scene.player);
         }
         else if (scene.player.warriors > 0){
-          scene.player.warriors--; 
-          scene.warriors.splice(scene.warriors.length-1 , 1);
+          removeWarriors(scene.warriors, 1, scene.player);
         }
 	}
     if (game.keyboard.consumePressed("e")) {
@@ -238,11 +242,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     }
     
     if (scene.player.collides(scene.hive)){
-        scene.player.workers += scene.hive.workers;
-        scene.player.warriors += scene.hive.warriors;
-        createWarriors(scene.warriors, scene.hive.warriors, scene.player);
-        scene.hive.workers = 0;
-        scene.hive.warriors = 0;
         scene.inHive = true;
         
         if (scene.player.carryingItem){
