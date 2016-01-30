@@ -64,6 +64,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	//init
 	var scene =this;
     //Game Variables
+    scene.timers.game = new Splat.Timer();
+    scene.timers.game.expireMillis = 600000;
+    scene.timers.game.start();
+    
     scene.timers.spawnbees = new Splat.Timer();
     scene.timers.spawnbees.expireMillis = 1000;
     scene.timers.spawnbees.start();
@@ -71,8 +75,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.collectibles = [];
     scene.collectibleX = new Splat.Entity(0, 0, 50, 50);
 	scene.collectibleX.color = "blue";
+    scene.collectibleX.cost = 20;
     scene.collectibleY = new Splat.Entity(0, 0, 50, 50);
 	scene.collectibleY.color = "aqua";
+    scene.collectibleY.cost = 30;
     scene.collectibles.push(scene.collectibleX);
     scene.collectibles.push(scene.collectibleY);
     spawnCollectibles(scene.collectibles);
@@ -153,9 +159,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         scene.timers.spawnbees.reset();
         scene.timers.spawnbees.start();
     }
+    if (scene.timers.game.expired()){
+        console.log("You lose the game.  You suck.");
+    }
     
     for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.player.carryingItem){
+        if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.player.carryingItem && scene.player.workers >= scene.collectibles[i].cost){
             scene.player.carryingItem = true;
             scene.player.itemCarried = i;
             scene.collectibles[i] = null;
@@ -184,6 +193,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     for (var i=0; i<scene.collectibles.length; i++){
         if (scene.collectibles[i]){
             drawEntity(context, scene.collectibles[i]);
+            context.fillText(scene.collectibles[i].cost, scene.collectibles[i].x, scene.collectibles[i].y);
         }
     }
 	drawEntity(context, scene.player);
@@ -193,9 +203,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
     
     context.fillStyle = "#ffffff";
-    context.font = "200px";
-    context.fillText(scene.player.workers, 100, 100);
-    context.fillText(scene.player.warriors, canvas.width - 150, 100);
+    context.fillText(scene.player.workers, scene.player.x, scene.player.y);
+    context.fillText(scene.player.warriors, scene.player.x+30, scene.player.y);
+    context.fillText(scene.hive.workers, scene.hive.x, scene.hive.y);
+    context.fillText(scene.hive.warriors, scene.hive.x+30, scene.hive.y);
     if (scene.collectiblesGotten[0]){
         context.fillText("Collectible X: CHECK!", canvas.width/2, 100);
     }
@@ -208,6 +219,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     else{
         context.fillText("Collectible Y: Not Found", canvas.width/2, 110);
     }
+    context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), canvas.width/2, 50);
 }));
 
 game.scenes.switchTo("loading");
