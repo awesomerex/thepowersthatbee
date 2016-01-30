@@ -67,8 +67,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.collectibles.push(scene.collectibleY);
     spawnCollectibles(scene.collectibles);
     
-    scene.carryingItem = false;
-    scene.itemCarried = -1;
+    scene.player.carryingItem = false;
+    scene.player.itemCarried = -1;
     scene.collectiblesGotten = [];
     scene.collectibles.forEach(function() {
         scene.collectiblesGotten.push(false);
@@ -152,9 +152,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     //scene.collectibles.forEach(function(element, i) {
     for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.carryingItem){
-            scene.carryingItem = true;
-            scene.itemCarried = i;
+        if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.player.carryingItem){
+            scene.player.carryingItem = true;
+            scene.player.itemCarried = i;
             scene.collectibles[i] = null;
         }
     }
@@ -165,9 +165,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         scene.hive.workers = 0;
         scene.hive.warriors = 0;
         
-        if (scene.carryingItem){
-            scene.carryingItem = false;
-            scene.collectiblesGotten[scene.itemCarried] = true;
+        if (scene.player.carryingItem){
+            scene.player.carryingItem = false;
+            scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
     }
 }, function(context) {
