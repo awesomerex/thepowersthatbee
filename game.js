@@ -94,13 +94,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	//init
 	var scene =this;
     //Game Variables
+    scene.inHive = false;
+    
     scene.timers.game = new Splat.Timer();
     scene.timers.game.expireMillis = 600000;
     scene.timers.game.start();
-    
-    scene.timers.spawnbees = new Splat.Timer();
-    scene.timers.spawnbees.expireMillis = 1000;
-    scene.timers.spawnbees.start();
     
     scene.collectibles = [];
     scene.collectibleX = new Splat.Entity(0, 0, 50, 50);
@@ -143,12 +141,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
     scene.hive.color = "red";
-    scene.hive.workers = 0;
-    scene.hive.warriors = 0;
     
 	scene.warriors = [];
-	createWarriors(scene.warriors, 5);
-	//scene.warriors.color = "red";
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
@@ -161,17 +155,35 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         scene.player.actualSpeed = scene.player.minimumSpeed;
     }
     
-	if (game.keyboard.isPressed("left")) {
+	if (game.keyboard.isPressed("a")) {
 		scene.player.x -= scene.player.actualSpeed;
 	}
-	if (game.keyboard.isPressed("right")) {
+	if (game.keyboard.isPressed("d")) {
 		scene.player.x += scene.player.actualSpeed;
 	}
-	if (game.keyboard.isPressed("up")) {
+	if (game.keyboard.isPressed("w")) {
 		scene.player.y -= scene.player.actualSpeed;
 	}
-	if (game.keyboard.isPressed("down")) {
+	if (game.keyboard.isPressed("s")) {
 		scene.player.y += scene.player.actualSpeed;
+	}
+    if (game.keyboard.consumePressed("q")) {
+        if (scene.inHive){
+		  scene.player.warriors++;
+          createWarriors(scene.warriors, 1);
+        }
+        else if (scene.player.warriors > 0){
+          scene.player.warriors--; 
+          scene.warriors.splice(scene.warriors.length-1 , 1);
+        }
+	}
+    if (game.keyboard.consumePressed("e")) {
+		if (scene.inHive){
+		  scene.player.workers++;
+        }
+        else if (scene.player.workers > 0){
+          scene.player.workers--; 
+        }
 	}
 
 	scene.player.getTheta();
@@ -190,13 +202,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		}
 	}
     
-    if (scene.timers.spawnbees.expired()){
-        scene.hive.workers++;
-        scene.hive.warriors++;
-        scene.timers.spawnbees.reset();
-        scene.timers.spawnbees.start();
-    }
     if (scene.timers.game.expired()){
+        scene.timers.game.stop();
         console.log("You lose the game.  You suck.");
     }
     
@@ -209,16 +216,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     }
     
     if (scene.player.collides(scene.hive)){
-        scene.player.workers += scene.hive.workers;
-        scene.player.warriors += scene.hive.warriors;
-        createWarriors(scene.warriors, scene.hive.warriors);
-        scene.hive.workers = 0;
-        scene.hive.warriors = 0;
+        scene.inHive = true;
         
         if (scene.player.carryingItem){
             scene.player.carryingItem = false;
             scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
+    }
+    else{
+        scene.inHive = false;
     }
 
     for( i = 0; i < scene.enemies.length; i++ ){
@@ -253,8 +259,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     context.font = "20px winter";
     context.fillText(scene.player.workers, scene.player.x, scene.player.y);
     context.fillText(scene.player.warriors, scene.player.x+30, scene.player.y);
-    context.fillText(scene.hive.workers, scene.hive.x, scene.hive.y);
-    context.fillText(scene.hive.warriors, scene.hive.x+30, scene.hive.y);
     if (scene.collectiblesGotten[0]){
         context.fillText("Collectible X: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 100);
     }
