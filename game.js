@@ -30,12 +30,31 @@ function spawnCollectibles(collectibles){
     collectibles[1].y = collectibleXSpawnPoints[spawnPointY].y;
 }
 
+// var generateWarrior = function(x, y){
+// 	var w = new Splat.Entity(x, y, 10, 10);
+// 	w.color = "red";
+// 	w.attached = false;
+// 	w.followMouse = function(){
+// 	};
+// };
+
+var placeOnCircle = function(object, mouse, circle){
+	var cx = circle.x + circle.width/2;
+	var cy = circle.y + circle.width/2;
+	var theta = Math.atan2(mouse.x-cx, mouse.y-cy);
+	console.log(theta, theta + Math.PI/180);
+	object.x = cx + circle.r * Math.sin(theta);
+	object.y = cy + circle.r * Math.cos(theta);
+};
+
+
 function drawEntity(context, drawable){
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
 }
 
 game.scenes.add("title", new Splat.Scene(canvas, function() {
+	//init
 	var scene =this;
     //Game Variables
     scene.timers.spawnbees = new Splat.Timer();
@@ -60,6 +79,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
 	scene.player.color = "green";
+
     scene.player.baseSpeed = 3;
     scene.player.actualSpeed = 3;
     scene.player.minimumSpeed = 0.01;
@@ -70,6 +90,18 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.hive.color = "red";
     scene.hive.workers = 0;
     scene.hive.warriors = 0;
+
+
+	scene.player.r = 100;
+	scene.warriors = [];
+	 for(var x = 0; x < 5 ; x++){
+	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
+									   Math.floor(Math.random() * canvas.height) +1,
+									   10, 10);
+	 	warrior.color ="red";
+	 	scene.warriors.push(warrior);
+	 }
+	//scene.warriors.color = "red";
 
 }, function() {
 	// simulation
@@ -90,6 +122,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
 	if (game.keyboard.isPressed("down")) {
 		scene.player.y += scene.player.actualSpeed;
+	}
+
+	for(var x = 0; x< scene.warriors.length; x++){
+		placeOnCircle(scene.warriors[x], game.mouse, scene.player);
 	}
     
     if (scene.timers.spawnbees.expired()){
@@ -132,6 +168,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         }
     }
 	drawEntity(context, scene.player);
+
+	for(var x = 0; x< scene.warriors.length; x++){
+		drawEntity(context, scene.warriors[x]);
+	}
     
     context.fillStyle = "#ffffff";
     context.font = "200px";
