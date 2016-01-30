@@ -21,15 +21,16 @@ var game = new Splat.Game(canvas, manifest);
 // 	w.color = "red";
 // 	w.attached = false;
 // 	w.followMouse = function(){
-
 // 	};
 // };
 
 var placeOnCircle = function(object, mouse, circle){
-	var theta = Math.atan2(mouse.x-circle.cx, mouse.y-circle.cy);
-	console.log(theta);
-	object.x = circle.cx + circle.r * Math.sin(theta);
-	object.y = circle.cy + circle.r * Math.cos(theta);
+	var cx = circle.x + circle.width/2;
+	var cy = circle.y + circle.width/2;
+	var theta = Math.atan2(mouse.x-cx, mouse.y-cy);
+	console.log(theta, theta + Math.PI/180);
+	object.x = cx + circle.r * Math.sin(theta);
+	object.y = cy + circle.r * Math.cos(theta);
 };
 
 function drawEntity(context, drawable){
@@ -43,8 +44,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
 	scene.player.color = "green";
 	scene.player.r = 100;
-	scene.player.cx = scene.player.x + scene.player.width/2;
-	scene.player.cy = scene.player.y + scene.player.height/2;
 	scene.warriors = [];
 	 for(var x = 0; x < 5 ; x++){
 	  	var warrior = new Splat.Entity(Math.floor(Math.random() * canvas.width) +1, 
@@ -69,7 +68,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	if (game.keyboard.isPressed("down")) {
 		scene.player.y += 1;
 	}
-	console.log(game.mouse);
 	for(var x = 0; x< scene.warriors.length; x++){
 		placeOnCircle(scene.warriors[x], game.mouse, scene.player);
 	}
