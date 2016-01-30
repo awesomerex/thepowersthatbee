@@ -24,7 +24,7 @@ function drawEntity(context, drawable){
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var scene =this;
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
-	scene.player.color = "red";
+	scene.player.color = "green";
 
 }, function() {
 	// simulation
