@@ -24,7 +24,6 @@ var manifest = {
 
 var game = new Splat.Game(canvas, manifest);
 
-//TODO: Once we know how many types, we need an array of spawn points for EACH type (mountain, burrow, tree, etc)
 var collectibleXSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
 var collectibleYSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
 
@@ -38,18 +37,9 @@ function spawnCollectibles(collectibles){
     collectibles[1].y = collectibleXSpawnPoints[spawnPointY].y;
 }
 
-// var generateWarrior = function(x, y){
-// 	var w = new Splat.AnimatedEntity(x, y, 10, 10);
-// 	w.color = "red";
-// 	w.attached = false;
-// 	w.followMouse = function(){
-// 	};
-// };
-
 var placeOnCircle = function(object, circle, offset){
 	object.x = circle.cx + circle.r * Math.sin(circle.theta + offset);
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
-	//console.log(object);
 };
 
 
@@ -85,6 +75,7 @@ function removeWarriors(array, num, player){
 function createEnemy(array, scene){
 	var enemy = new Splat.AnimatedEntity(50, 100, 25, 25, null, 0,0);
 	enemy.type = "";
+    enemy.hitting = false;
 	enemy.move = function(){
 		this.target();
 		this.x += this.speedx;
@@ -118,8 +109,10 @@ function createEnemy(array, scene){
 		if(this.health <= 0){
 			this.delete = true;
 		}
-		this.target();
-		this.move();
+        if (!this.hitting){
+            this.target();
+            this.move();
+        }
 	};
 	enemy.delete = false;
 	enemy.health = 30;
@@ -176,7 +169,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.cx = (this.x + this.width/2);
 		this.cy = (this.y + this.height/2);
 		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
-	};
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
     scene.hive.color = "red";
@@ -262,6 +254,17 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             scene.player.carryingItem = false;
             scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
+        
+        //Check for Game Win Condition
+        var winCount=0;
+        for (var w=0; w < scene.collectiblesGotten.length; w++){
+            if (scene.collectiblesGotten[w]){
+                winCount++;
+            }
+        }
+        if (winCount===scene.collectiblesGotten.length){
+            console.log("You Win!  Insert win action here");
+        }
     }
     else{
         scene.inHive = false;
@@ -269,15 +272,26 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
     //enemies update loop
     for( i = 0; i < scene.enemies.length; i++ ){
-    	console.log("enemies update loop");
+    	//console.log("enemies update loop");
     	if(scene.enemies[i].collides(scene.player)){
-    		console.log("administrator bee hit");
+            if (!scene.enemies[i].hitting){
+                if (scene.player.workers > 0){
+                    scene.player.workers--;
+                    scene.enemies[i].hitting = true;
+                }
+                else{
+                console.log("Administrator bee hit, You Lose. You Suck.");
+                }
+            }
     	}
+        else{
+            scene.enemies[i].hitting = false;
+        }
     	for( x = 0; x < scene.warriors.length; x++){
     		if(scene.enemies[i].collides(scene.warriors[x]) &&
     			scene.enemies[i].health > 0){
     			scene.enemies[i].collision();
-    			scene.warriors.splice(x, 1);
+                removeWarriors(scene.warriors, 1, scene.player);
     		}
     	}
     	scene.enemies[i].update();
