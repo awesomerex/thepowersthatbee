@@ -21,6 +21,11 @@ var manifest = {
         } 
 	},
 	"animations": {
+        "hive"  :{
+			"strip" : "assets/images/sprites/misc/Hive.png",
+			"frames" : 1,
+			"msPerFrame" : 0,
+		},
 		"admin-idle-right"  :{
 			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle_right.png",
 			"frames" : 2,
@@ -70,17 +75,27 @@ var manifest = {
             "strip" : "assets/images/world_map.jpg",
             "frames" : 1,
             "msPerFrame" : 100,
-        }
+        },
+        "enemy-krow-left"  :{
+			"strip" : "assets/images/sprites/enemies/Krow_left.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-krow-right"  :{
+			"strip" : "assets/images/sprites/enemies/Krow_right.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		}
 	}
 };
 
 var game = new Splat.Game(canvas, manifest);
 
-var itemGirlSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemPockySpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemDvdSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemSteamSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemVrSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemGirlSpawnPoints = [{x:10, y:10}];
+var itemPockySpawnPoints = [{x:10, y:260}];
+var itemDvdSpawnPoints = [{x:10, y:520}];
+var itemSteamSpawnPoints = [{x:10, y:790}];
+var itemVrSpawnPoints = [{x:10, y:1040}];
 
 function spawnItems(items){
     var rand;
@@ -110,15 +125,17 @@ var placeOnCircle = function(object, circle, offset){
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
 };
 
-function drawEntity(context, drawable, debug){
-
-	context.fillStyle = drawable.color;
-	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
-    if(debug){
-        context.strokeStyle = "Green";
-        context.strokeRect(drawable.x, drawable.y, drawable.width, drawable.height);
-    }
-}
+//Depricated
+//---
+//function drawEntity(context, drawable, debug){
+//
+//	context.fillStyle = drawable.color;
+//	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
+  //  if(debug){
+    //    context.strokeStyle = "Green";
+      //  context.strokeRect(drawable.x, drawable.y, drawable.width, drawable.height);
+    //}
+//}
 
 function drawAnimatedEntity(context, drawable, debug){
 	drawable.draw(context);
@@ -128,9 +145,9 @@ function drawAnimatedEntity(context, drawable, debug){
     }
 }
 
-function createWarriors(array, num, player, initialSprite){
+function createWarriors(array, num, player, sprite){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, initialSprite, 0,0);
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 59, 81, sprite, 0,0);
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
@@ -147,14 +164,20 @@ function removeWarriors(array, num, player){
     }
 }
 
-function createEnemy(array, scene){
-	var enemy = new Splat.AnimatedEntity(50, 100, 25, 25, null, 0,0);
+function createEnemy(array, scene, spriteLeft, spriteRight){
+	var enemy = new Splat.AnimatedEntity(500, 100, 169, 150, spriteRight, 0,0);
 	enemy.type = "";
     enemy.hitting = false;
-	enemy.move = function(){
+	enemy.go = function(){
 		this.target();
 		this.x += this.speedx;
 		this.y += this.speedy;
+        if (this.speedx < 0 && this.sprite !== spriteLeft){ 
+            this.sprite = spriteLeft;
+        }
+        else if (this.speedx > 0 && this.sprite !== spriteRight){
+            this.sprite = spriteRight;
+        }
 	};
 	enemy.target = function(){
 		var targetx = scene.player.x + scene.player.width/2;
@@ -175,7 +198,6 @@ function createEnemy(array, scene){
 			this.speedy = 0;
 		}
 	};
-	enemy.color = "yellow";
 	enemy.collision = function(){
 		this.health --;
 		console.log("enemy", this.health);
@@ -186,7 +208,7 @@ function createEnemy(array, scene){
 		}
         if (!this.hitting){
             this.target();
-            this.move();
+            this.go();
         }
 	};
 	enemy.delete = false;
@@ -209,19 +231,19 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.background = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImage, 0, 0);
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
-    scene.itemGirl = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemGirlSprite, 0,0);
+    scene.itemGirl = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemGirlSprite, 0,0);
     scene.itemGirl.cost = 30;
     scene.itemPockySprite = game.animations.get("item-pocky");
-    scene.itemPocky = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemPockySprite, 0,0);
+    scene.itemPocky = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemPockySprite, 0,0);
     scene.itemPocky.cost = 30;
     scene.itemDvdSprite = game.animations.get("item-dvd");
-    scene.itemDvd = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemDvdSprite, 0,0);
+    scene.itemDvd = new Splat.AnimatedEntity(0, 0, 180, 200, scene.itemDvdSprite, 0,0);
     scene.itemDvd.cost = 30;
     scene.itemSteamSprite = game.animations.get("item-steam");
-    scene.itemSteam = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemSteamSprite, 0,0);
+    scene.itemSteam = new Splat.AnimatedEntity(0, 0, 260, 200, scene.itemSteamSprite, -10,0);
     scene.itemSteam.cost = 30;
     scene.itemVrSprite = game.animations.get("item-vr");
-    scene.itemVr = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemVrSprite, 0,0);
+    scene.itemVr = new Splat.AnimatedEntity(0, 0, 270, 200, scene.itemVrSprite, -10,0);
     scene.itemVr.cost = 30;
     scene.items.push(scene.itemGirl);
     scene.items.push(scene.itemPocky);
@@ -240,12 +262,13 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
     scene.enemies = [];
     
-    createEnemy(scene.enemies, scene);
+    scene.krowLeft = game.animations.get("enemy-krow-left");
+    scene.krowRight = game.animations.get("enemy-krow-right");
+    createEnemy(scene.enemies, scene, scene.krowLeft, scene.krowRight);
     
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, scene.adminIdleLeft, 0,0);
-
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 75, 100, scene.adminIdleLeft, 0,0);
     scene.player.baseSpeed = 3;
     scene.player.actualSpeed = 3;
     scene.player.minimumSpeed = 0.01;
@@ -253,10 +276,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.player.workers = 0;
     scene.player.warriors = 0;
     scene.player.itemCarried = -1;
-    
-    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 50, 50, null, 0,0);
-    scene.hive.color = "red";
-
 	scene.player.r = 100;
 	scene.player.theta = 0;
 	scene.player.getTheta = function(){
@@ -265,8 +284,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
 	};
     
-    scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
-    scene.hive.color = "red";
+    scene.hiveSprite = game.animations.get("hive");
+    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 146, 201, scene.hiveSprite, 0,0);
     
     scene.warriorIdleRight = game.animations.get("warrior-idle-right");
     scene.warriorIdleLeft = game.animations.get("warrior-idle-left");
@@ -341,7 +360,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.player.getTheta();
 	var count = 0;
 	for(var x = 0; x< scene.warriors.length; x++){
-		//console.log(x);
 		if(x === 0){
 		placeOnCircle(scene.warriors[x], scene.player, x);
 		}
@@ -391,7 +409,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
     //enemies update loop
     for( i = 0; i < scene.enemies.length; i++ ){
-    	//console.log("enemies update loop");
     	if(scene.enemies[i].collides(scene.player)){
             if (!scene.enemies[i].hitting){
                 if (scene.player.workers > 0){
@@ -432,17 +449,18 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.warriors.forEach(function(element) {
        element.move(ellapsedMillis); 
     });
-    scene.items.forEach(function(element) {
+    scene.enemies.forEach(function(element) {
        element.move(ellapsedMillis); 
     });
-
+    
 }, function(context) {
 	// draw
 	var scene = this;
 	context.fillStyle = "#092227";
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
+
     drawAnimatedEntity(context, scene.background, scene.debug);
-    drawEntity(context, scene.hive, scene.debug);
+    drawAnimatedEntity(context, scene.hive, scene.debug);
 
     for (var i=0; i<scene.items.length; i++){
         if (scene.items[i].active){
@@ -457,7 +475,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
 
 	for(x = 0; x < scene.enemies.length; x++){
-		drawEntity(context, scene.enemies[x], scene.debug);
+		drawAnimatedEntity(context, scene.enemies[x], scene.debug);
 	}
 
 	drawAnimatedEntity(context, scene.player, scene.debug);
