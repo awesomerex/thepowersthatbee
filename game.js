@@ -213,9 +213,6 @@ function removeWarriors(array, num, player){
         array.splice(0,num);
         player.warriors--;
     }
-    else{
-        console.log("Tried to remove more warriors than there are.  Do Better");
-    }
 }
 
 function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
@@ -254,7 +251,6 @@ function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight,
 	};
 	enemy.collision = function(){
 		this.health --;
-		console.log("enemy", this.health);
 	};
 	enemy.update = function(){
 		if(this.health <= 0){
@@ -367,6 +363,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     //Game Variables
     scene.debug = false;
     scene.inHive = false;
+    scene.won = false;
     scene.collisionboxes = [];
     for (var x = 0; x < game.collisionboxfile.length; x++){
         var collidable = new Splat.Entity(game.collisionboxfile[x][0], game.collisionboxfile[x][1]-game.collisionboxfile[x][3], game.collisionboxfile[x][2], game.collisionboxfile[x][3]);
@@ -536,7 +533,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     if (scene.timers.game.expired()){
         scene.timers.game.stop();
-        console.log("You lose the game.  You suck.");
+        scene.player = null;
     }
     
     for (var i=0; i<scene.items.length; i++){
@@ -561,7 +558,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             }
         }
         if (winCount===scene.itemsGotten.length){
-            console.log("You Win!  Insert win action here");
+            scene.won = true;
         }
     }
     else{
@@ -587,7 +584,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     }
                 }
                 else{
-                console.log("Administrator bee hit, You Lose. You Suck.");
+                    scene.player = null;
                 }
             }
     	}
@@ -682,6 +679,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     }
     else{
         context.fillText("VR Headset: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
+    }
+    if (scene.won){
+        context.fillText("You've Won!  Have a Party!  With Honey!", scene.camera.x + scene.camera.width/2, scene.camera.y + 250);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
 
