@@ -96,11 +96,11 @@ game.fonts.load({
     }   
 });
 
-var itemGirlSpawnPoints = [{x:10, y:10}];
-var itemPockySpawnPoints = [{x:10, y:260}];
-var itemDvdSpawnPoints = [{x:10, y:520}];
-var itemSteamSpawnPoints = [{x:10, y:790}];
-var itemVrSpawnPoints = [{x:10, y:1040}];
+var itemGirlSpawnPoints = [{x:1287, y:8869}];
+var itemPockySpawnPoints = [{x:608, y:1745}];
+var itemDvdSpawnPoints = [{x:1273, y:11694}, {x:5246, y:11653}, {x:6839, y:11477}, {x:9882, y:11657}, {x:13082, y:11537}];
+var itemSteamSpawnPoints = [{x:11582, y:1638}, {x:6830, y:1587}, {x:16772, y:1378}, {x:18566, y:2007}];
+var itemVrSpawnPoints = [{x:13665, y:8883}, {x:18301, y:8904}, {x:13517, y:7464}, {x:12920, y:8874}];
 
 function spawnItems(items){
     var rand;
@@ -274,7 +274,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 75, 100, scene.adminIdleLeft, 0,0);
+	scene.player = new Splat.AnimatedEntity(10046, 8337, 75, 100, scene.adminIdleLeft, 0,0);
     scene.player.baseSpeed = 50;
     scene.player.actualSpeed = 50;
     scene.player.minimumSpeed = 0.01;
@@ -291,7 +291,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	};
     
     scene.hiveSprite = game.animations.get("hive");
-    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 240, 201, scene.hiveSprite, 0,0);
+    scene.hive = new Splat.AnimatedEntity(10146, 8136, 240, 201, scene.hiveSprite, 0,0);
     
     scene.warriorIdleRight = game.animations.get("warrior-idle-right");
     scene.warriorIdleLeft = game.animations.get("warrior-idle-left");
