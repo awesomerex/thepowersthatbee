@@ -275,18 +275,18 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 75, 100, scene.adminIdleLeft, 0,0);
-    scene.player.baseSpeed = 3;
-    scene.player.actualSpeed = 3;
+    scene.player.baseSpeed = 50;
+    scene.player.actualSpeed = 50;
     scene.player.minimumSpeed = 0.01;
     scene.player.facing = 0;    //0:left, 1:right
     scene.player.workers = 0;
     scene.player.warriors = 0;
     scene.player.itemCarried = -1;
-	scene.player.r = 100;
+	scene.player.r = 200;
 	scene.player.theta = 0;
 	scene.player.getTheta = function(){
-		this.cx = (this.x + this.width/2);
-		this.cy = (this.y + this.height/2);
+		this.cx = (this.x );
+		this.cy = (this.y );
 		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
 	};
     
