@@ -14,9 +14,14 @@ var manifest = {
         } 
 	},
 	"animations": {
-		"worker-death"  :{
-			"strip" : "assets/images/WorkerDeath.png",
-			"frames" : 1,
+		"admin-idle"  :{
+			"strip" : "assets/images/SMALL_administrator_idle.png",
+			"frames" : 2,
+			"msPerFrame" : 100,
+		},
+        "warrior-idle"  :{
+			"strip" : "assets/images/SMALL_warrior_idle.png",
+			"frames" : 2,
 			"msPerFrame" : 100,
 		}
 	}
@@ -54,8 +59,8 @@ function drawAnimatedEntity(context, drawable){
 
 function createWarriors(array, num, player){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, null, 0,0);
-	 	warrior.color ="red";
+        var warriorIdle = game.animations.get("warrior-idle");
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, warriorIdle, 0,0);
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
@@ -150,9 +155,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.enemies = [];
     
     createEnemy(scene.enemies, scene);
-
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, null, 0,0);
-	scene.player.color = "green";
+    
+    scene.adminIdle = game.animations.get("admin-idle");
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, scene.adminIdle, 0,0);
 
     scene.player.baseSpeed = 3;
     scene.player.actualSpeed = 3;
@@ -179,9 +184,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
-    scene.workerdeath = game.animations.get("worker-death");
-    scene.testWorker = new Splat.AnimatedEntity(20, 2,300,300, scene.workerdeath, 0,0);
-    console.log(scene.testWorker);
 
 }, function(ellapsedMillis) {
 	// simulation
@@ -310,7 +312,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     		scene.enemies.splice(i,1);
     	}
     }
-    scene.testWorker.move(ellapsedMillis);
+    scene.player.move(ellapsedMillis);
+    scene.warriors.forEach(function(element) {
+       element.move(ellapsedMillis); 
+    });
 
 }, function(context) {
 	// draw
@@ -326,17 +331,16 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             context.fillText(scene.collectibles[i].cost, scene.collectibles[i].x, scene.collectibles[i].y);
         }
     }
-	drawEntity(context, scene.player);
 
 	for(var x = 0; x< scene.warriors.length; x++){
-		drawEntity(context, scene.warriors[x]);
+		drawAnimatedEntity(context, scene.warriors[x]);
 	}
 
 	for(x = 0; x < scene.enemies.length; x++){
 		drawEntity(context, scene.enemies[x]);
 	}
 
-	drawAnimatedEntity(context, scene.testWorker);
+	drawAnimatedEntity(context, scene.player);
     
     context.fillStyle = "#ffffff";
     context.font = "20px winter";
