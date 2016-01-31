@@ -17,7 +17,6 @@ var manifest = {
 
 var game = new Splat.Game(canvas, manifest);
 
-//TODO: Once we know how many types, we need an array of spawn points for EACH type (mountain, burrow, tree, etc)
 var collectibleXSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
 var collectibleYSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
 
@@ -31,18 +30,9 @@ function spawnCollectibles(collectibles){
     collectibles[1].y = collectibleXSpawnPoints[spawnPointY].y;
 }
 
-// var generateWarrior = function(x, y){
-// 	var w = new Splat.AnimatedEntity(x, y, 10, 10);
-// 	w.color = "red";
-// 	w.attached = false;
-// 	w.followMouse = function(){
-// 	};
-// };
-
 var placeOnCircle = function(object, circle, offset){
 	object.x = circle.cx + circle.r * Math.sin(circle.theta + offset);
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
-	//console.log(object);
 };
 
 
@@ -248,6 +238,17 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             scene.player.carryingItem = false;
             scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
+        
+        //Check for Game Win Condition
+        var winCount=0;
+        for (var w=0; w < scene.collectiblesGotten.length; w++){
+            if (scene.collectiblesGotten[i]){
+                winCount++;
+            }
+        }
+        if (winCount===scene.collectiblesGotten.length){
+            console.log("You Win!  Insert win action here");
+        }
     }
     else{
         scene.inHive = false;
@@ -263,7 +264,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     		if(scene.enemies[i].collides(scene.warriors[x]) &&
     			scene.enemies[i].health > 0){
     			scene.enemies[i].collision();
-    			scene.warriors.splice(x, 1);
+                removeWarriors(scene.warriors, 1, scene.player);
     		}
     	}
     	scene.enemies[i].update();
