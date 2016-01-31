@@ -420,13 +420,13 @@ function spawnEnemies(enemies, scene){
     var moleRight = game.animations.get("enemy-mole-walking-right");
     var moleLeft = game.animations.get("enemy-mole-walking-left");
     enemyBadjerSpawnPoints.forEach(function(point) {
-        createGroundEnemy(enemies, scene, point.x, point.y, 1174, 238, badjerLeft, badjerRight, 15);
+        createGroundEnemy(enemies, scene, point.x, point.y, 587, 238, badjerLeft, badjerRight, 15);
     });
     enemyBrrSpawnPoints.forEach(function(point) {
         createBrr(enemies, scene, point.x, point.y, 580, 495, brrLeft, brrRight, 1000000000);
     });
     enemyCoolJaySpawnPoints.forEach(function(point) {
-        createBird(enemies, scene, point.x, point.y, 358, 168, coolJayLeft, coolJayRight, 10);
+        createBird(enemies, scene, point.x, point.y, 179, 168, coolJayLeft, coolJayRight, 10);
     });
     enemyFrogSpawnPoints.forEach(function(point) {
         createGroundEnemy(enemies, scene, point.x, point.y, 334, 197, frogLeft, frogRight, 15);
@@ -435,7 +435,7 @@ function spawnEnemies(enemies, scene){
         createBird(enemies, scene, point.x, point.y, 169, 150, krowLeft, krowRight, 10);
     });
     enemyMoleSpawnPoints.forEach(function(point) {
-        createGroundEnemy(enemies, scene, point.x, point.y, 878, 296, moleLeft, moleRight, 20);
+        createGroundEnemy(enemies, scene, point.x, point.y, 439, 296, moleLeft, moleRight, 20);
     });
 }
 
