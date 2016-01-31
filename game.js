@@ -79,11 +79,11 @@ var manifest = {
 
 var game = new Splat.Game(canvas, manifest);
 
-var itemGirlSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemPockySpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemDvdSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemSteamSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var itemVrSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemGirlSpawnPoints = [{x:10, y:10}];
+var itemPockySpawnPoints = [{x:10, y:260}];
+var itemDvdSpawnPoints = [{x:10, y:520}];
+var itemSteamSpawnPoints = [{x:10, y:790}];
+var itemVrSpawnPoints = [{x:10, y:1040}];
 
 function spawnItems(items){
     var rand;
@@ -135,7 +135,7 @@ function drawAnimatedEntity(context, drawable, debug){
 
 function createWarriors(array, num, player, sprite){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, sprite, 0,0);
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 59, 81, sprite, 0,0);
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
@@ -153,7 +153,7 @@ function removeWarriors(array, num, player){
 }
 
 function createEnemy(array, scene, spriteLeft, spriteRight){
-	var enemy = new Splat.AnimatedEntity(50, 100, 25, 25, spriteRight, 0,0);
+	var enemy = new Splat.AnimatedEntity(500, 100, 169, 150, spriteRight, 0,0);
 	enemy.type = "";
     enemy.hitting = false;
 	enemy.go = function(){
@@ -217,19 +217,19 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
-    scene.itemGirl = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemGirlSprite, 0,0);
+    scene.itemGirl = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemGirlSprite, 0,0);
     scene.itemGirl.cost = 30;
     scene.itemPockySprite = game.animations.get("item-pocky");
-    scene.itemPocky = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemPockySprite, 0,0);
+    scene.itemPocky = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemPockySprite, 0,0);
     scene.itemPocky.cost = 30;
     scene.itemDvdSprite = game.animations.get("item-dvd");
-    scene.itemDvd = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemDvdSprite, 0,0);
+    scene.itemDvd = new Splat.AnimatedEntity(0, 0, 180, 200, scene.itemDvdSprite, 0,0);
     scene.itemDvd.cost = 30;
     scene.itemSteamSprite = game.animations.get("item-steam");
-    scene.itemSteam = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemSteamSprite, 0,0);
+    scene.itemSteam = new Splat.AnimatedEntity(0, 0, 260, 200, scene.itemSteamSprite, -10,0);
     scene.itemSteam.cost = 30;
     scene.itemVrSprite = game.animations.get("item-vr");
-    scene.itemVr = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemVrSprite, 0,0);
+    scene.itemVr = new Splat.AnimatedEntity(0, 0, 270, 200, scene.itemVrSprite, -10,0);
     scene.itemVr.cost = 30;
     scene.items.push(scene.itemGirl);
     scene.items.push(scene.itemPocky);
@@ -254,8 +254,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, scene.adminIdleLeft, 0,0);
-
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 75, 100, scene.adminIdleLeft, 0,0);
     scene.player.baseSpeed = 3;
     scene.player.actualSpeed = 3;
     scene.player.minimumSpeed = 0.01;
@@ -272,7 +271,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	};
     
     scene.hiveSprite = game.animations.get("hive");
-    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 50, 50, scene.hiveSprite, 0,0);
+    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 146, 201, scene.hiveSprite, 0,0);
     
     scene.warriorIdleRight = game.animations.get("warrior-idle-right");
     scene.warriorIdleLeft = game.animations.get("warrior-idle-left");
@@ -437,7 +436,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.enemies.forEach(function(element) {
        element.move(ellapsedMillis); 
     });
-
+    
 }, function(context) {
 	// draw
 	var scene = this;
