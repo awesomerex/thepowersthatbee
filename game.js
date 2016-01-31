@@ -9,9 +9,16 @@ var manifest = {
 	"sounds": {
 	},
 	"fonts": {
-        "winter": "fronts/Frostys.TTF"
+        "Frostys": {
+        	"truetype" : "assets/fonts/Frostys.TTF"
+        } 
 	},
 	"animations": {
+		"worker-death"  :{
+			"strip" : "assets/images/WorkerDeath.png",
+			"frames" : 1,
+			"msPerFrame" : 100,
+		}
 	}
 };
 
@@ -49,6 +56,10 @@ var placeOnCircle = function(object, circle, offset){
 function drawEntity(context, drawable){
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
+}
+
+function drawAnimatedEntity(context, drawable){
+	drawable.draw(context);
 }
 
 function createWarriors(array, num, player){
@@ -165,7 +176,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.cx = (this.x + this.width/2);
 		this.cy = (this.y + this.height/2);
 		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
-		console.log(game.mouse);
 	};
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
@@ -175,8 +185,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
+    scene.workerdeath = game.animations.get("worker-death");
+    scene.testWorker = new Splat.AnimatedEntity(20, 2,300,300, scene.workerdeath, 0,0);
+    console.log(scene.testWorker);
 
-}, function() {
+}, function(ellapsedMillis) {
 	// simulation
 	var scene = this;
     scene.player.actualSpeed = scene.player.baseSpeed - (scene.player.baseSpeed * (scene.player.workers + scene.player.warriors) * 0.01);
@@ -272,6 +285,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     		scene.enemies.splice(i,1);
     	}
     }
+    scene.testWorker.move(ellapsedMillis);
 
 }, function(context) {
 	// draw
@@ -296,6 +310,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	for(x = 0; x < scene.enemies.length; x++){
 		drawEntity(context, scene.enemies[x]);
 	}
+
+	drawAnimatedEntity(context, scene.testWorker);
     
     context.fillStyle = "#ffffff";
     context.font = "20px winter";
@@ -314,6 +330,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         context.fillText("Collectible Y: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 130);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
+
+    
+
 }));
 
 game.scenes.switchTo("loading");
