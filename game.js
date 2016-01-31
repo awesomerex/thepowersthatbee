@@ -77,6 +77,11 @@ var manifest = {
             "frames" : 1,
             "msPerFrame" : 100,
         },
+        "world-bg-springtime" : {
+            "strip" : "assets/images/world_map_springtime.jpg",
+            "frames" : 1,
+            "msPerFrame" : 100,
+        },
         "enemy-krow-left"  :{
 			"strip" : "assets/images/sprites/enemies/Krow_left.png",
 			"frames" : 2,
@@ -456,7 +461,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.timers.game.start();
     
     scene.bgImage = game.animations.get("world-bg");
+    scene.bgImageSpring = game.animations.get("world-bg-springtime");
     scene.background = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImage, 0, 0);
+    scene.backgroundSpring = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImageSpring, 0, 0);
     
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
@@ -641,6 +648,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         }
         if (winCount===scene.itemsGotten.length){
             scene.won = true;
+            game.sounds.stop("winterTheme");
+            game.sounds.play("springOfMyHeart", true);
         }
     }
     else{
@@ -706,7 +715,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	context.fillStyle = "#092227";
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
 
-    drawAnimatedEntity(context, scene.background, scene.debug);
+    if (!scene.won){
+        drawAnimatedEntity(context, scene.background, scene.debug);
+    }
+    else{
+        drawAnimatedEntity(context, scene.backgroundSpring, scene.debug);
+    }
     drawAnimatedEntity(context, scene.hive, scene.debug);
 
     for (var i=0; i<scene.items.length; i++){
