@@ -77,6 +77,11 @@ var manifest = {
             "frames" : 1,
             "msPerFrame" : 100,
         },
+        "world-bg-springtime" : {
+            "strip" : "assets/images/world_map_springtime.jpg",
+            "frames" : 1,
+            "msPerFrame" : 100,
+        },
         "enemy-krow-left"  :{
 			"strip" : "assets/images/sprites/enemies/Krow_left.png",
 			"frames" : 2,
@@ -179,8 +184,6 @@ var placeOnCircle = function(object, circle, offset){
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
 };
 
-//Depricated
-//---
 function drawEntity(context, drawable, debug){
 
 	context.fillStyle = drawable.color;
@@ -202,7 +205,6 @@ function drawAnimatedEntity(context, drawable, debug){
 function createWarriors(array, num, player, sprite){
     for(var x = 0; x < num ; x++){
 	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 59, 81, sprite.copy(), 0,0);
-	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
 	 }
@@ -213,14 +215,11 @@ function removeWarriors(array, num, player){
         array.splice(0,num);
         player.warriors--;
     }
-    else{
-        console.log("Tried to remove more warriors than there are.  Do Better");
-    }
 }
 
-function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
-	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight.copy(), 0,0);
-	enemy.type = "";
+
+function createBird(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
+	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight, 0,0);
     enemy.hitting = false;
 	enemy.go = function(){
 		this.target();
@@ -238,7 +237,7 @@ function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight,
 		var targety = scene.player.y + scene.player.height/2;
 		this.speed = 1;
 		var distance =  Math.sqrt( Math.pow((targetx - this.x), 2) + Math.pow((targety - this.y),2));
-		if( distance < 500){
+		if( distance < 1000){
 			this.speedx = Math.abs(targetx - this.x)/distance * this.speed;
 			this.speedy = Math.abs(targety - this.y)/distance * this.speed;
 			if (targetx - this.x < 0){
@@ -254,7 +253,92 @@ function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight,
 	};
 	enemy.collision = function(){
 		this.health --;
-		console.log("enemy", this.health);
+	};
+	enemy.update = function(){
+		if(this.health <= 0){
+			this.delete = true;
+		}
+        if (!this.hitting){
+            this.target();
+            this.go();
+        }
+	};
+	enemy.delete = false;
+	enemy.health = health;
+	array.push(enemy);
+}
+
+function createGroundEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
+	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight, 0,0);
+    enemy.hitting = false;
+	enemy.go = function(){
+		this.target();
+		this.x += this.speedx;
+        if (this.speedx < 0 && this.sprite !== spriteLeft){ 
+            this.sprite = spriteLeft;
+        }
+        else if (this.speedx > 0 && this.sprite !== spriteRight){
+            this.sprite = spriteRight;
+        }
+	};
+	enemy.target = function(){
+		var targetx = scene.player.x + scene.player.width/2;
+		var targety = scene.player.y + scene.player.height/2;
+		this.speed = 1;
+		var distance =  Math.sqrt( Math.pow((targetx - this.x), 2) + Math.pow((targety - this.y),2));
+		if( distance < 500){
+			this.speedx = Math.abs(targetx - this.x)/distance * this.speed;
+			if (targetx - this.x < 0){
+				this.speedx *= -1;
+			}
+		}else{
+			this.speedx = 0;
+		}
+	};
+	enemy.collision = function(){
+		this.health --;
+	};
+	enemy.update = function(){
+		if(this.health <= 0){
+			this.delete = true;
+		}
+        if (!this.hitting){
+            this.target();
+            this.go();
+        }
+	};
+	enemy.delete = false;
+	enemy.health = health;
+	array.push(enemy);
+}
+
+function createBrr(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
+	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight, 0,0);
+    enemy.hitting = false;
+	enemy.go = function(){
+		this.target();
+        if (this.speedx < 0 && this.sprite !== spriteLeft){ 
+            this.sprite = spriteLeft;
+        }
+        else if (this.speedx > 0 && this.sprite !== spriteRight){
+            this.sprite = spriteRight;
+        }
+	};
+	enemy.target = function(){
+		var targetx = scene.player.x + scene.player.width/2;
+		var targety = scene.player.y + scene.player.height/2;
+		this.speed = 1;
+		var distance =  Math.sqrt( Math.pow((targetx - this.x), 2) + Math.pow((targety - this.y),2));
+		if( distance < 1000){
+            //Brr Theme
+            this.shutupnode = true;
+		}else{
+			//Stop Brr Theme
+            this.shutupnode = true;
+		}
+	};
+	enemy.collision = function(){
+		this.health --;
 	};
 	enemy.update = function(){
 		if(this.health <= 0){
@@ -323,7 +407,7 @@ function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight,
 // }
 
 var enemyBadjerSpawnPoints = [{x:1497, y:1717}, {x:2775, y:5115}];
-var enemyBrrSpawnPoints = [{x:1287, y:8564}];
+var enemyBrrSpawnPoints = [{x:1587, y:8564}];
 var enemyCoolJaySpawnPoints = [{x:10335, y:3809}, {x:7784, y:2072}, {x:5583, y:8276}, {x:2365, y:2901}, {x:8327, y:4547}, {x:12515, y:4250}, {x:12085, y:1469}, {x:15626, y:3543}, {x:14252, y:1817}, {x:18517, y:3022}, {x:17759, y:1229}, {x:17258, y:4407}];
 var enemyFrogSpawnPoints = [{x:14237, y:8915}, {x:14817, y:8915}, {x:15837, y:8915}, {x:16375, y:8915}, {x:16677, y:8915}];
 var enemyKrowSpawnPoints = [{x:2365, y:2901}, {x:13333, y:7506}, {x:13673, y:4194}, {x:11908, y:7783}, {x:7124, y:4726}, {x:7026, y:7302}];
@@ -342,22 +426,22 @@ function spawnEnemies(enemies, scene){
     var moleRight = game.animations.get("enemy-mole-walking-right");
     var moleLeft = game.animations.get("enemy-mole-walking-left");
     enemyBadjerSpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 1174, 238, badjerLeft, badjerRight, 15);
+        createGroundEnemy(enemies, scene, point.x, point.y, 587, 238, badjerLeft, badjerRight, 15);
     });
     enemyBrrSpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 580, 495, brrLeft, brrRight, 1000000000);
+        createBrr(enemies, scene, point.x, point.y, 580, 495, brrLeft, brrRight, 1000000000);
     });
     enemyCoolJaySpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 358, 168, coolJayLeft, coolJayRight, 10);
+        createBird(enemies, scene, point.x, point.y, 179, 168, coolJayLeft, coolJayRight, 10);
     });
     enemyFrogSpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 334, 197, frogLeft, frogRight, 15);
+        createGroundEnemy(enemies, scene, point.x, point.y, 334, 197, frogLeft, frogRight, 15);
     });
     enemyKrowSpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 169, 150, krowLeft, krowRight, 10);
+        createBird(enemies, scene, point.x, point.y, 169, 150, krowLeft, krowRight, 10);
     });
     enemyMoleSpawnPoints.forEach(function(point) {
-        createEnemy(enemies, scene, point.x, point.y, 878, 296, moleLeft, moleRight, 20);
+        createGroundEnemy(enemies, scene, point.x, point.y, 439, 296, moleLeft, moleRight, 20);
     });
 }
 
@@ -367,6 +451,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     //Game Variables
     scene.debug = false;
     scene.inHive = false;
+    scene.won = false;
     scene.collisionboxes = [];
     for (var x = 0; x < game.collisionboxfile.length; x++){
         var collidable = new Splat.Entity(game.collisionboxfile[x][0], game.collisionboxfile[x][1]-game.collisionboxfile[x][3], game.collisionboxfile[x][2], game.collisionboxfile[x][3]);
@@ -377,7 +462,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.timers.game.start();
     
     scene.bgImage = game.animations.get("world-bg");
+    scene.bgImageSpring = game.animations.get("world-bg-springtime");
     scene.background = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImage, 0, 0);
+    scene.backgroundSpring = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImageSpring, 0, 0);
     
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
@@ -443,7 +530,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
     
-    //game.sounds.play("winterTheme", true);
+    game.sounds.play("winterTheme", true);
 
 }, function(ellapsedMillis) {
 	// simulation
@@ -540,7 +627,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     if (scene.timers.game.expired()){
         scene.timers.game.stop();
-        console.log("You lose the game.  You suck.");
+        scene.reset();
     }
     
     for (var i=0; i<scene.items.length; i++){
@@ -565,7 +652,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             }
         }
         if (winCount===scene.itemsGotten.length){
-            console.log("You Win!  Insert win action here");
+            scene.won = true;
+            game.sounds.stop("winterTheme");
+            game.sounds.play("springOfMyHeart", true);
         }
     }
     else{
@@ -591,7 +680,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     }
                 }
                 else{
-                console.log("Administrator bee hit, You Lose. You Suck.");
+                    scene.reset();
                 }
             }
     	}
@@ -631,7 +720,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	context.fillStyle = "#092227";
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
 
-    drawAnimatedEntity(context, scene.background, scene.debug);
+    if (!scene.won){
+        drawAnimatedEntity(context, scene.background, scene.debug);
+    }
+    else{
+        drawAnimatedEntity(context, scene.backgroundSpring, scene.debug);
+    }
     drawAnimatedEntity(context, scene.hive, scene.debug);
 
     for (var i=0; i<scene.items.length; i++){
@@ -686,6 +780,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     }
     else{
         context.fillText("VR Headset: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
+    }
+    if (scene.won){
+        context.fillText("You've Won!  Have a Party!  With Honey!", scene.camera.x + scene.camera.width/2, scene.camera.y + 250);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
 
