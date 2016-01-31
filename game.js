@@ -88,8 +88,13 @@ var manifest = {
 		}
 	}
 };
-
 var game = new Splat.Game(canvas, manifest);
+
+game.fonts.load({
+    "Frostys":{
+		"truetype": "assets/fonts/Frostys.TTF",
+    }   
+});
 
 var itemGirlSpawnPoints = [{x:10, y:10}];
 var itemPockySpawnPoints = [{x:10, y:260}];
@@ -475,7 +480,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     for (var i=0; i<scene.items.length; i++){
         if (scene.items[i].active){
             drawAnimatedEntity(context, scene.items[i], scene.debug);
-            context.font = "20px winter";
+            context.font = "20px Frostys";
             context.fillStyle = "#ffffff";
             context.fillText(scene.items[i].cost, scene.items[i].x, scene.items[i].y);
         }
@@ -492,7 +497,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	drawAnimatedEntity(context, scene.player, scene.debug);
     
     context.fillStyle = "#ffffff";
-    context.font = "20px winter";
+    context.font = "20px Frostys";
     context.fillText(scene.player.workers, scene.player.x, scene.player.y);
     context.fillText(scene.player.warriors, scene.player.x+30, scene.player.y);
     if (scene.itemsGotten[0]){
