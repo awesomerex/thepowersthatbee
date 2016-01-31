@@ -401,7 +401,7 @@ function createBrr(array, scene, x, y, width, height, spriteLeft, spriteRight, h
 // }
 
 var enemyBadjerSpawnPoints = [{x:1497, y:1717}, {x:2775, y:5115}];
-var enemyBrrSpawnPoints = [{x:1287, y:8564}];
+var enemyBrrSpawnPoints = [{x:1587, y:8564}];
 var enemyCoolJaySpawnPoints = [{x:10335, y:3809}, {x:7784, y:2072}, {x:5583, y:8276}, {x:2365, y:2901}, {x:8327, y:4547}, {x:12515, y:4250}, {x:12085, y:1469}, {x:15626, y:3543}, {x:14252, y:1817}, {x:18517, y:3022}, {x:17759, y:1229}, {x:17258, y:4407}];
 var enemyFrogSpawnPoints = [{x:14237, y:8915}, {x:14817, y:8915}, {x:15837, y:8915}, {x:16375, y:8915}, {x:16677, y:8915}];
 var enemyKrowSpawnPoints = [{x:2365, y:2901}, {x:13333, y:7506}, {x:13673, y:4194}, {x:11908, y:7783}, {x:7124, y:4726}, {x:7026, y:7302}];
@@ -497,7 +497,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
 
 	scene.player = new Splat.AnimatedEntity(10046, 8337, 75, 100, scene.adminIdleLeft, 0,0);
-    scene.player.active = true;
     scene.player.baseSpeed = 2;
     scene.player.actualSpeed = 2;
     scene.player.minimumSpeed = 0.01;
@@ -616,7 +615,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     if (scene.timers.game.expired()){
         scene.timers.game.stop();
-        scene.player.active = false;
+        scene.reset();
     }
     
     for (var i=0; i<scene.items.length; i++){
@@ -667,7 +666,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     }
                 }
                 else{
-                    scene.player.active = false;
+                    scene.reset();
                 }
             }
     	}
@@ -727,9 +726,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		drawAnimatedEntity(context, scene.enemies[x], scene.debug);
 	}
 
-    if (scene.player.active){
-	   drawAnimatedEntity(context, scene.player, scene.debug);
-    }
+	drawAnimatedEntity(context, scene.player, scene.debug);
     
     context.fillStyle = "#ffffff";
     context.font = "20px Frostys";
