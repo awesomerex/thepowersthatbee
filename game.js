@@ -133,9 +133,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.collectibleX = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
 	scene.collectibleX.color = "blue";
     scene.collectibleX.cost = 20;
+    scene.collectibleX.active = true;
     scene.collectibleY = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
 	scene.collectibleY.color = "aqua";
     scene.collectibleY.cost = 30;
+    scene.collectibleY.active = true;
     scene.collectibles.push(scene.collectibleX);
     scene.collectibles.push(scene.collectibleY);
     spawnCollectibles(scene.collectibles);
@@ -157,7 +159,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.player.minimumSpeed = 0.01;
     scene.player.workers = 0;
     scene.player.warriors = 0;
-    scene.player.carryingItem = false;
     scene.player.itemCarried = -1;
     
     scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 50, 50, null, 0,0);
@@ -241,18 +242,17 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     }
     
     for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i] && scene.player.collides(scene.collectibles[i]) && !scene.player.carryingItem && scene.player.workers >= scene.collectibles[i].cost){
-            scene.player.carryingItem = true;
+        if (scene.collectibles[i].active && scene.player.collides(scene.collectibles[i]) && scene.player.itemCarried < 0 && scene.player.workers >= scene.collectibles[i].cost){
             scene.player.itemCarried = i;
-            scene.collectibles[i] = null;
+            scene.collectibles[i].active = false;
         }
     }
     
     if (scene.player.collides(scene.hive)){
         scene.inHive = true;
         
-        if (scene.player.carryingItem){
-            scene.player.carryingItem = false;
+        if (scene.player.itemCarried > -1){
+            scene.player.itemCarried = -1;
             scene.collectiblesGotten[scene.player.itemCarried] = true;
         }
         
@@ -279,6 +279,16 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                 if (scene.player.workers > 0){
                     scene.player.workers--;
                     scene.enemies[i].hitting = true;
+                    
+                    //drop item if too weak
+                    if (scene.player.itemCarried > -1){
+                        if (scene.player.workers < scene.collectibles[scene.player.itemCarried].cost){
+                            scene.collectibles[scene.player.itemCarried].x = scene.player.x;
+                            scene.collectibles[scene.player.itemCarried].y = scene.player.y;
+                            scene.collectibles[scene.player.itemCarried].active = true;
+                            scene.player.itemCarried = -1;
+                        }
+                    }
                 }
                 else{
                 console.log("Administrator bee hit, You Lose. You Suck.");
@@ -310,7 +320,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     drawEntity(context, scene.hive);
 
     for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i]){
+        if (scene.collectibles[i].active){
             drawEntity(context, scene.collectibles[i]);
             context.font = "20px winter";
             context.fillText(scene.collectibles[i].cost, scene.collectibles[i].x, scene.collectibles[i].y);
