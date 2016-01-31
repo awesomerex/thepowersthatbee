@@ -7,6 +7,13 @@ var manifest = {
 	"images": {
 	},
 	"sounds": {
+        "badger-growl" : "assets/sounds/growl.wav",
+        "badger-snarl" : "assets/sounds/Snarl.wav",
+        "frog-ribbit" : "assets/sounds/Ribbit.wav",
+        "bird-kaw" : "assets/sounds/Kaw.wav",
+        "mole-scuttle" : "assets/sounds/mole_noise.wav",
+        "springOfMyHeart" : "assets/sounds/The_Spring_of_My_Heart.wav",
+        "brrTheme" : "assets/sounds/Brr_Theme.wav",
 	},
 	"fonts": {
         "Frostys": {
@@ -58,7 +65,12 @@ var manifest = {
 			"strip" : "assets/images/sprites/items/VR_Headset.png",
 			"frames" : 1,
 			"msPerFrame" : 100,
-		}
+		},
+        "world-bg" : {
+            "strip" : "assets/images/world_map.jpg",
+            "frames" : 1,
+            "msPerFrame" : 100,
+        }
 	}
 };
 
@@ -193,6 +205,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.timers.game.expireMillis = 600000;
     scene.timers.game.start();
     
+    scene.bgImage = game.animations.get("world-bg");
+    scene.background = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImage, 0, 0);
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
     scene.itemGirl = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemGirlSprite, 0,0);
@@ -264,13 +278,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 }, function(ellapsedMillis) {
 	// simulation
 	var scene = this;
-
     if (game.keyboard.isPressed("1")){
         if (scene.debug === true){
             scene.debug = false;
         }else{
             scene.debug = true;
         }
+    }
+    if (game.keyboard.isPressed("2")){
+        game.scenes.switchTo("End");
     }
 
     scene.player.actualSpeed = scene.player.baseSpeed - (scene.player.baseSpeed * (scene.player.workers + scene.player.warriors) * 0.01);
@@ -425,6 +441,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var scene = this;
 	context.fillStyle = "#092227";
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
+    drawAnimatedEntity(context, scene.background, scene.debug);
     drawEntity(context, scene.hive, scene.debug);
 
     for (var i=0; i<scene.items.length; i++){
@@ -480,8 +497,42 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         context.fillText("VR Headset: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
+}));
 
     
+game.scenes.add("End", new Splat.Scene(canvas, function() {
+    //init
+    var scene = this;
+    scene.drawables = [];
+    
+
+
+
+},function(){
+    //simulation
+    var scene = this;
+    scene.debug = false;
+    if (game.keyboard.isPressed("1")){
+        if (scene.debug === true){
+            scene.debug = false;
+        }else{
+            scene.debug = true;
+        }
+    }
+
+    if (game.keyboard.isPressed("0")){
+        console.log(game.mouse);
+    }
+
+
+},function(context){
+    //draw
+    var scene = this;
+    context.fillStyle = "#092227";
+    context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
+    for(var x = 0; x < scene.drawables.length; x++){
+        drawAnimatedEntity(context, scene.drawables[x], scene.debug);
+    }
 
 }));
 
