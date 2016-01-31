@@ -14,6 +14,7 @@ var manifest = {
         "mole-scuttle" : "assets/sounds/mole_noise.wav",
         "springOfMyHeart" : "assets/sounds/The_Spring_of_My_Heart.wav",
         "brrTheme" : "assets/sounds/Brr_Theme.wav",
+        "winterTheme" : "assets/sounds/Wintry_Woods.ogg"
 	},
 	"fonts": {
         "Frostys": {
@@ -299,6 +300,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
+    
+    game.sounds.play("winterTheme", true);
 
 }, function(ellapsedMillis) {
 	// simulation
