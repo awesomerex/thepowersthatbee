@@ -15,13 +15,38 @@ var manifest = {
 	},
 	"animations": {
 		"admin-idle"  :{
-			"strip" : "assets/images/SMALL_administrator_idle.png",
+			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle.png",
 			"frames" : 2,
 			"msPerFrame" : 100,
 		},
         "warrior-idle"  :{
-			"strip" : "assets/images/SMALL_warrior_idle.png",
+			"strip" : "assets/images/sprites/bees/SMALL_warrior_idle.png",
 			"frames" : 2,
+			"msPerFrame" : 100,
+		},
+        "item-girl"  :{
+			"strip" : "assets/images/sprites/items/Magical_Girl.png",
+			"frames" : 1,
+			"msPerFrame" : 100,
+		},
+        "item-pocky"  :{
+			"strip" : "assets/images/sprites/items/Pocky.png",
+			"frames" : 1,
+			"msPerFrame" : 100,
+		},
+        "item-dvd"  :{
+			"strip" : "assets/images/sprites/items/Revengers_DVD.png",
+			"frames" : 1,
+			"msPerFrame" : 100,
+		},
+        "item-steam"  :{
+			"strip" : "assets/images/sprites/items/Steam_Cards.png",
+			"frames" : 1,
+			"msPerFrame" : 100,
+		},
+        "item-vr"  :{
+			"strip" : "assets/images/sprites/items/VR_Headset.png",
+			"frames" : 1,
 			"msPerFrame" : 100,
 		}
 	}
@@ -29,17 +54,33 @@ var manifest = {
 
 var game = new Splat.Game(canvas, manifest);
 
-var collectibleXSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
-var collectibleYSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemGirlSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemPockySpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemDvdSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemSteamSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
+var itemVrSpawnPoints = [{x:10, y:10}, {x:20, y:20}, {x:30, y:30}, {x:40, y:40}, {x:50, y:50}];
 
-function spawnCollectibles(collectibles){
-    var spawnPointX = Math.floor(Math.random() * (collectibleXSpawnPoints.length));
-    collectibles[0].x = collectibleXSpawnPoints[spawnPointX].x;
-    collectibles[0].y = collectibleXSpawnPoints[spawnPointX].y;
+function spawnItems(items){
+    var rand;
+    rand = Math.floor(Math.random() * (itemGirlSpawnPoints.length));
+    items[0].x = itemGirlSpawnPoints[rand].x;
+    items[0].y = itemGirlSpawnPoints[rand].y;
     
-    var spawnPointY = Math.floor(Math.random() * (collectibleYSpawnPoints.length));
-    collectibles[1].x = collectibleXSpawnPoints[spawnPointY].x;
-    collectibles[1].y = collectibleXSpawnPoints[spawnPointY].y;
+    rand = Math.floor(Math.random() * (itemPockySpawnPoints.length));
+    items[1].x = itemPockySpawnPoints[rand].x;
+    items[1].y = itemPockySpawnPoints[rand].y;
+    
+    rand = Math.floor(Math.random() * (itemDvdSpawnPoints.length));
+    items[2].x = itemDvdSpawnPoints[rand].x;
+    items[2].y = itemDvdSpawnPoints[rand].y;
+    
+    rand = Math.floor(Math.random() * (itemSteamSpawnPoints.length));
+    items[3].x = itemSteamSpawnPoints[rand].x;
+    items[3].y = itemSteamSpawnPoints[rand].y;
+    
+    rand = Math.floor(Math.random() * (itemVrSpawnPoints.length));
+    items[4].x = itemVrSpawnPoints[rand].x;
+    items[4].y = itemVrSpawnPoints[rand].y;
 }
 
 var placeOnCircle = function(object, circle, offset){
@@ -134,22 +175,35 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.timers.game.expireMillis = 600000;
     scene.timers.game.start();
     
-    scene.collectibles = [];
-    scene.collectibleX = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
-	scene.collectibleX.color = "blue";
-    scene.collectibleX.cost = 20;
-    scene.collectibleX.active = true;
-    scene.collectibleY = new Splat.AnimatedEntity(0, 0, 50, 50, null, 0,0);
-	scene.collectibleY.color = "aqua";
-    scene.collectibleY.cost = 30;
-    scene.collectibleY.active = true;
-    scene.collectibles.push(scene.collectibleX);
-    scene.collectibles.push(scene.collectibleY);
-    spawnCollectibles(scene.collectibles);
+    scene.items = [];
+    scene.itemGirlSprite = game.animations.get("item-girl");
+    scene.itemGirl = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemGirlSprite, 0,0);
+    scene.itemGirl.cost = 30;
+    scene.itemPockySprite = game.animations.get("item-pocky");
+    scene.itemPocky = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemPockySprite, 0,0);
+    scene.itemPocky.cost = 30;
+    scene.itemDvdSprite = game.animations.get("item-dvd");
+    scene.itemDvd = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemDvdSprite, 0,0);
+    scene.itemDvd.cost = 30;
+    scene.itemSteamSprite = game.animations.get("item-steam");
+    scene.itemSteam = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemSteamSprite, 0,0);
+    scene.itemSteam.cost = 30;
+    scene.itemVrSprite = game.animations.get("item-vr");
+    scene.itemVr = new Splat.AnimatedEntity(0, 0, 50, 50, scene.itemVrSprite, 0,0);
+    scene.itemVr.cost = 30;
+    scene.items.push(scene.itemGirl);
+    scene.items.push(scene.itemPocky);
+    scene.items.push(scene.itemDvd);
+    scene.items.push(scene.itemSteam);
+    scene.items.push(scene.itemVr);
+    scene.items.forEach(function(element) {
+        element.active = true;
+    });
+    spawnItems(scene.items);
     
-    scene.collectiblesGotten = [];
-    scene.collectibles.forEach(function() {
-        scene.collectiblesGotten.push(false);
+    scene.itemsGotten = [];
+    scene.items.forEach(function() {
+        scene.itemsGotten.push(false);
     });
 
     scene.enemies = [];
@@ -243,10 +297,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         console.log("You lose the game.  You suck.");
     }
     
-    for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i].active && scene.player.collides(scene.collectibles[i]) && scene.player.itemCarried < 0 && scene.player.workers >= scene.collectibles[i].cost){
+    for (var i=0; i<scene.items.length; i++){
+        if (scene.items[i].active && scene.player.collides(scene.items[i]) && scene.player.itemCarried < 0 && scene.player.workers >= scene.items[i].cost){
             scene.player.itemCarried = i;
-            scene.collectibles[i].active = false;
+            scene.items[i].active = false;
         }
     }
     
@@ -255,17 +309,17 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         
         if (scene.player.itemCarried > -1){
             scene.player.itemCarried = -1;
-            scene.collectiblesGotten[scene.player.itemCarried] = true;
+            scene.itemsGotten[scene.player.itemCarried] = true;
         }
         
         //Check for Game Win Condition
         var winCount=0;
-        for (var w=0; w < scene.collectiblesGotten.length; w++){
-            if (scene.collectiblesGotten[w]){
+        for (var w=0; w < scene.itemsGotten.length; w++){
+            if (scene.itemsGotten[w]){
                 winCount++;
             }
         }
-        if (winCount===scene.collectiblesGotten.length){
+        if (winCount===scene.itemsGotten.length){
             console.log("You Win!  Insert win action here");
         }
     }
@@ -284,10 +338,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     
                     //drop item if too weak
                     if (scene.player.itemCarried > -1){
-                        if (scene.player.workers < scene.collectibles[scene.player.itemCarried].cost){
-                            scene.collectibles[scene.player.itemCarried].x = scene.player.x;
-                            scene.collectibles[scene.player.itemCarried].y = scene.player.y;
-                            scene.collectibles[scene.player.itemCarried].active = true;
+                        if (scene.player.workers < scene.items[scene.player.itemCarried].cost){
+                            scene.items[scene.player.itemCarried].x = scene.player.x;
+                            scene.items[scene.player.itemCarried].y = scene.player.y;
+                            scene.items[scene.player.itemCarried].active = true;
                             scene.player.itemCarried = -1;
                         }
                     }
@@ -316,6 +370,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.warriors.forEach(function(element) {
        element.move(ellapsedMillis); 
     });
+    scene.items.forEach(function(element) {
+       element.move(ellapsedMillis); 
+    });
 
 }, function(context) {
 	// draw
@@ -324,11 +381,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
     drawEntity(context, scene.hive);
 
-    for (var i=0; i<scene.collectibles.length; i++){
-        if (scene.collectibles[i].active){
-            drawEntity(context, scene.collectibles[i]);
+    for (var i=0; i<scene.items.length; i++){
+        if (scene.items[i].active){
+            drawAnimatedEntity(context, scene.items[i]);
             context.font = "20px winter";
-            context.fillText(scene.collectibles[i].cost, scene.collectibles[i].x, scene.collectibles[i].y);
+            context.fillText(scene.items[i].cost, scene.items[i].x, scene.items[i].y);
         }
     }
 
@@ -346,17 +403,35 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     context.font = "20px winter";
     context.fillText(scene.player.workers, scene.player.x, scene.player.y);
     context.fillText(scene.player.warriors, scene.player.x+30, scene.player.y);
-    if (scene.collectiblesGotten[0]){
-        context.fillText("Collectible X: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 100);
+    if (scene.itemsGotten[0]){
+        context.fillText("Magical Girl: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 100);
     }
     else{
-        context.fillText("Collectible X: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 100);
+        context.fillText("Magical Girl: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 100);
     }
-    if (scene.collectiblesGotten[1]){
-        context.fillText("Collectible Y: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 130);
+    if (scene.itemsGotten[1]){
+        context.fillText("Pocky: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 130);
     }
     else{
-        context.fillText("Collectible Y: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 130);
+        context.fillText("Pocky: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 130);
+    }
+    if (scene.itemsGotten[2]){
+        context.fillText("Revengers DVD: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 160);
+    }
+    else{
+        context.fillText("Revengers DVD: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 160);
+    }
+    if (scene.itemsGotten[3]){
+        context.fillText("Steam Cards: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 190);
+    }
+    else{
+        context.fillText("Steam Cards: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 190);
+    }
+    if (scene.itemsGotten[4]){
+        context.fillText("VR Headset: CHECK!", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
+    }
+    else{
+        context.fillText("VR Headset: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
 
