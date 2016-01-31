@@ -98,13 +98,26 @@ var placeOnCircle = function(object, circle, offset){
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
 };
 
+<<<<<<< HEAD
 function drawEntity(context, drawable){
+=======
+
+function drawEntity(context, drawable, debug){
+>>>>>>> 53ddbacbf9045658e878b243db698a1d21c3687e
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
+    if(debug){
+        context.strokeStyle = "Green";
+        context.strokeRect(drawable.x, drawable.y, drawable.width, drawable.height);
+    }
 }
 
-function drawAnimatedEntity(context, drawable){
+function drawAnimatedEntity(context, drawable, debug){
 	drawable.draw(context);
+    if(debug){
+        context.strokeStyle = "Green";
+        context.strokeRect(drawable.x, drawable.y, drawable.width, drawable.height);
+    }
 }
 
 function createWarriors(array, num, player, initialSprite){
@@ -177,6 +190,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	//init
 	var scene =this;
     //Game Variables
+    scene.debug = false;
     scene.inHive = false;
     
     scene.timers.game = new Splat.Timer();
@@ -254,6 +268,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 }, function(ellapsedMillis) {
 	// simulation
 	var scene = this;
+
+    if (game.keyboard.isPressed("1")){
+        if (scene.debug === true){
+            scene.debug = false;
+        }else{
+            scene.debug = true;
+        }
+    }
+
     scene.player.actualSpeed = scene.player.baseSpeed - (scene.player.baseSpeed * (scene.player.workers + scene.player.warriors) * 0.01);
     if (scene.player.actualSpeed < 0){
         scene.player.actualSpeed = scene.player.minimumSpeed;
@@ -406,25 +429,25 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var scene = this;
 	context.fillStyle = "#092227";
 	context.fillRect(scene.camera.x, scene.camera.y, canvas.width, canvas.height);
-    drawEntity(context, scene.hive);
+    drawEntity(context, scene.hive, scene.debug);
 
     for (var i=0; i<scene.items.length; i++){
         if (scene.items[i].active){
-            drawAnimatedEntity(context, scene.items[i]);
+            drawAnimatedEntity(context, scene.items[i], scene.debug);
             context.font = "20px winter";
             context.fillText(scene.items[i].cost, scene.items[i].x, scene.items[i].y);
         }
     }
 
 	for(var x = 0; x< scene.warriors.length; x++){
-		drawAnimatedEntity(context, scene.warriors[x]);
+		drawAnimatedEntity(context, scene.warriors[x], scene.debug);
 	}
 
 	for(x = 0; x < scene.enemies.length; x++){
-		drawEntity(context, scene.enemies[x]);
+		drawEntity(context, scene.enemies[x], scene.debug);
 	}
 
-	drawAnimatedEntity(context, scene.player);
+	drawAnimatedEntity(context, scene.player, scene.debug);
     
     context.fillStyle = "#ffffff";
     context.font = "20px winter";
