@@ -416,8 +416,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
-    
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 75, 100, scene.adminIdleLeft, 0,0);
+
+	scene.player = new Splat.AnimatedEntity(10046, 8337, 75, 100, scene.adminIdleLeft, 0,0);
     scene.player.baseSpeed = 2;
     scene.player.actualSpeed = 2;
     scene.player.minimumSpeed = 0.01;
