@@ -155,9 +155,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.player.r = 100;
 	scene.player.theta = 0;
 	scene.player.getTheta = function(){
-		this.cx = this.x + this.width/2;
-		this.cy = this.y + this.height/2;
-		this.theta = Math.atan2(game.mouse.x-this.cx, game.mouse.y-this.cy);
+		this.cx = (this.x + this.width/2);
+		this.cy = (this.y + this.height/2);
+		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
+		console.log(game.mouse);
 	};
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
