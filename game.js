@@ -201,7 +201,7 @@ function drawAnimatedEntity(context, drawable, debug){
 
 function createWarriors(array, num, player, sprite){
     for(var x = 0; x < num ; x++){
-	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 59, 81, sprite, 0,0);
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 59, 81, sprite.copy(), 0,0);
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
@@ -219,7 +219,7 @@ function removeWarriors(array, num, player){
 }
 
 function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
-	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight, 0,0);
+	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight.copy(), 0,0);
 	enemy.type = "";
     enemy.hitting = false;
 	enemy.go = function(){
@@ -227,10 +227,10 @@ function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight,
 		this.x += this.speedx;
 		this.y += this.speedy;
         if (this.speedx < 0 && this.sprite !== spriteLeft){ 
-            this.sprite = spriteLeft;
+            this.sprite = spriteLeft.copy();
         }
         else if (this.speedx > 0 && this.sprite !== spriteRight){
-            this.sprite = spriteRight;
+            this.sprite = spriteRight.copy();
         }
 	};
 	enemy.target = function(){
@@ -466,7 +466,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         scene.player.actualSpeed = scene.player.minimumSpeed;
     }
     
-	if (game.keyboard.isPressed("a")) {
+	if (game.keyboard.isPressed("a") && scene.player.x > 0) {
 		scene.player.vx = -scene.player.actualSpeed;
         scene.player.facing = 0;
         scene.player.sprite = scene.adminIdleLeft;
@@ -474,7 +474,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             element.sprite = scene.warriorIdleLeft;
         });
 	}
-	if (game.keyboard.isPressed("d")) {
+	if (game.keyboard.isPressed("d") && scene.player.x < 20000 - scene.player.width) {
 		scene.player.vx = scene.player.actualSpeed;
         scene.player.facing = 1;
         scene.player.sprite = scene.adminIdleRight;
@@ -482,10 +482,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             element.sprite = scene.warriorIdleRight;
         });
 	}
-	if (game.keyboard.isPressed("w")) {
+	if (game.keyboard.isPressed("w") && scene.player.y > 0) {
 		scene.player.vy = -scene.player.actualSpeed;
 	}
-	if (game.keyboard.isPressed("s")) {
+	if (game.keyboard.isPressed("s") && scene.player.y < 12000 - scene.player.height) {
 		scene.player.vy = scene.player.actualSpeed;
 	}
     if (game.mouse.consumePressed(2)) {
@@ -518,6 +518,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             }
         }
 	}
+
+    if(game.keyboard.consumePressed("space")){
+        console.log (scene.player.x, scene.player.y);
+    }
 
 	scene.player.getTheta();
 	var count = 0;
