@@ -64,6 +64,7 @@ function removeWarriors(array, num, player){
 function createEnemy(array, scene){
 	var enemy = new Splat.AnimatedEntity(50, 100, 25, 25, null, 0,0);
 	enemy.type = "";
+    enemy.hitting = false;
 	enemy.move = function(){
 		this.target();
 		this.x += this.speedx;
@@ -97,8 +98,10 @@ function createEnemy(array, scene){
 		if(this.health <= 0){
 			this.delete = true;
 		}
-		this.target();
-		this.move();
+        if (!this.hitting){
+            this.target();
+            this.move();
+        }
 	};
 	enemy.delete = false;
 	enemy.health = 30;
@@ -155,7 +158,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.cx = (this.x + this.width/2);
 		this.cy = (this.y + this.height/2);
 		this.theta = Math.atan2(game.mouse.x-this.cx+scene.gameCamera.x, game.mouse.y-this.cy+scene.gameCamera.y);
-		console.log(game.mouse);
+		//console.log(game.mouse);
 	};
     
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
@@ -243,7 +246,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         //Check for Game Win Condition
         var winCount=0;
         for (var w=0; w < scene.collectiblesGotten.length; w++){
-            if (scene.collectiblesGotten[i]){
+            if (scene.collectiblesGotten[w]){
                 winCount++;
             }
         }
@@ -257,10 +260,21 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
     //enemies update loop
     for( i = 0; i < scene.enemies.length; i++ ){
-    	console.log("enemies update loop");
+    	//console.log("enemies update loop");
     	if(scene.enemies[i].collides(scene.player)){
-    		console.log("administrator bee hit");
+            if (!scene.enemies[i].hitting){
+                if (scene.player.workers > 0){
+                    scene.player.workers--;
+                    scene.enemies[i].hitting = true;
+                }
+                else{
+                console.log("Administrator bee hit, You Lose. You Suck.");
+                }
+            }
     	}
+        else{
+            scene.enemies[i].hitting = false;
+        }
     	for( x = 0; x < scene.warriors.length; x++){
     		if(scene.enemies[i].collides(scene.warriors[x]) &&
     			scene.enemies[i].health > 0){
