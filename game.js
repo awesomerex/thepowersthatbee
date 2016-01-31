@@ -86,6 +86,56 @@ var manifest = {
 			"strip" : "assets/images/sprites/enemies/Krow_right.png",
 			"frames" : 2,
 			"msPerFrame" : 250,
+		},
+        "enemy-cooljay-left"  :{
+			"strip" : "assets/images/sprites/enemies/Cool_Jay_left.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-cooljay-right"  :{
+			"strip" : "assets/images/sprites/enemies/Cool_Jay_right.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-brr-left"  :{
+			"strip" : "assets/images/sprites/enemies/Brr_left.png",
+			"frames" : 1,
+			"msPerFrame" : 250,
+		},
+        "enemy-brr-right"  :{
+			"strip" : "assets/images/sprites/enemies/Brr_right.png",
+			"frames" : 1,
+			"msPerFrame" : 250,
+		},
+        "enemy-frog-left"  :{
+			"strip" : "assets/images/sprites/enemies/Frogue_left.png",
+			"frames" : 1,
+			"msPerFrame" : 250,
+		},
+        "enemy-frog-right"  :{
+			"strip" : "assets/images/sprites/enemies/Frogue_right.png",
+			"frames" : 1,
+			"msPerFrame" : 250,
+		},
+        "enemy-badjer-walking-left"  :{
+			"strip" : "assets/images/sprites/enemies/Badjer_Walking_left.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-badjer-walking-right"  :{
+			"strip" : "assets/images/sprites/enemies/Badjer_Walking_right.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-mole-walking-left"  :{
+			"strip" : "assets/images/sprites/enemies/mole_walking_left.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
+		},
+        "enemy-mole-walking-right"  :{
+			"strip" : "assets/images/sprites/enemies/mole_walking_right.png",
+			"frames" : 2,
+			"msPerFrame" : 250,
 		}
 	}
 };
@@ -170,8 +220,8 @@ function removeWarriors(array, num, player){
     }
 }
 
-function createEnemy(array, scene, spriteLeft, spriteRight){
-	var enemy = new Splat.AnimatedEntity(500, 100, 169, 150, spriteRight, 0,0);
+function createEnemy(array, scene, x, y, width, height, spriteLeft, spriteRight, health){
+	var enemy = new Splat.AnimatedEntity(x, y, width, height, spriteRight, 0,0);
 	enemy.type = "";
     enemy.hitting = false;
 	enemy.go = function(){
@@ -218,8 +268,47 @@ function createEnemy(array, scene, spriteLeft, spriteRight){
         }
 	};
 	enemy.delete = false;
-	enemy.health = 30;
+	enemy.health = health;
 	array.push(enemy);
+}
+
+var enemyBadjerSpawnPoints = [{x:1497, y:1717}, {x:2775, y:5115}];
+var enemyBrrSpawnPoints = [{x:1287, y:8564}];
+var enemyCoolJaySpawnPoints = [{x:10335, y:3809}, {x:7784, y:2072}, {x:5583, y:8276}, {x:2365, y:2901}, {x:8327, y:4547}, {x:12515, y:4250}, {x:12085, y:1469}, {x:15626, y:3543}, {x:14252, y:1817}, {x:18517, y:3022}, {x:17759, y:1229}, {x:17258, y:4407}];
+var enemyFrogSpawnPoints = [{x:14237, y:8915}, {x:14817, y:8915}, {x:15837, y:8915}, {x:16375, y:8915}, {x:16677, y:8915}];
+var enemyKrowSpawnPoints = [{x:2365, y:2901}, {x:13333, y:7506}, {x:13673, y:4194}, {x:11908, y:7783}, {x:7124, y:4726}, {x:7026, y:7302}];
+var enemyMoleSpawnPoints = [{x:2930, y:11546}, {x:3970, y:11546}, {x:5090, y:11546}, {x:9848, y:11557}, {x:12925, y:11421}];
+function spawnEnemies(enemies, scene){
+    var krowLeft = game.animations.get("enemy-krow-left");
+    var krowRight = game.animations.get("enemy-krow-right");
+    var coolJayRight = game.animations.get("enemy-cooljay-right");
+    var coolJayLeft = game.animations.get("enemy-cooljay-left");
+    var brrRight = game.animations.get("enemy-brr-right");
+    var brrLeft = game.animations.get("enemy-brr-left");
+    var frogRight = game.animations.get("enemy-frog-right");
+    var frogLeft = game.animations.get("enemy-frog-left");
+    var badjerRight = game.animations.get("enemy-badjer-walking-right");
+    var badjerLeft = game.animations.get("enemy-badjer-walking-left");
+    var moleRight = game.animations.get("enemy-mole-walking-right");
+    var moleLeft = game.animations.get("enemy-mole-walking-left");
+    enemyBadjerSpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 1174, 238, badjerLeft, badjerRight, 15);
+    });
+    enemyBrrSpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 580, 495, brrLeft, brrRight, 1000000000);
+    });
+    enemyCoolJaySpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 358, 168, coolJayLeft, coolJayRight, 10);
+    });
+    enemyFrogSpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 334, 197, frogLeft, frogRight, 15);
+    });
+    enemyKrowSpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 169, 150, krowLeft, krowRight, 10);
+    });
+    enemyMoleSpawnPoints.forEach(function(point) {
+        createEnemy(enemies, scene, point.x, point.y, 878, 296, moleLeft, moleRight, 20);
+    });
 }
 
 game.scenes.add("title", new Splat.Scene(canvas, function() {
@@ -269,9 +358,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
     scene.enemies = [];
     
-    scene.krowLeft = game.animations.get("enemy-krow-left");
-    scene.krowRight = game.animations.get("enemy-krow-right");
-    createEnemy(scene.enemies, scene, scene.krowLeft, scene.krowRight);
+    spawnEnemies(scene.enemies, scene);
     
     scene.adminIdleRight = game.animations.get("admin-idle-right");
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
@@ -301,7 +388,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
     scene.camera = scene.gameCamera;
     
-    game.sounds.play("winterTheme", true);
+    //game.sounds.play("winterTheme", true);
 
 }, function(ellapsedMillis) {
 	// simulation
