@@ -203,7 +203,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	if (game.keyboard.isPressed("s")) {
 		scene.player.y += scene.player.actualSpeed;
 	}
-    if (game.keyboard.consumePressed("q")) {
+    if (game.mouse.consumePressed(2)) {
         if (scene.inHive){
           createWarriors(scene.warriors, 1, scene.player);
         }
@@ -211,7 +211,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
           removeWarriors(scene.warriors, 1, scene.player);
         }
 	}
-    if (game.keyboard.consumePressed("e")) {
+    if (game.mouse.consumePressed(0)) {
 		if (scene.inHive){
 		  scene.player.workers++;
         }
