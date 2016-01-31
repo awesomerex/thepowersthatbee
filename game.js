@@ -415,6 +415,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.adminIdleLeft = game.animations.get("admin-idle-left");
 
 	scene.player = new Splat.AnimatedEntity(10046, 8337, 75, 100, scene.adminIdleLeft, 0,0);
+    scene.player.active = true;
     scene.player.baseSpeed = 2;
     scene.player.actualSpeed = 2;
     scene.player.minimumSpeed = 0.01;
@@ -533,7 +534,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     if (scene.timers.game.expired()){
         scene.timers.game.stop();
-        scene.player = null;
+        scene.player.active = false;
     }
     
     for (var i=0; i<scene.items.length; i++){
@@ -584,7 +585,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     }
                 }
                 else{
-                    scene.player = null;
+                    scene.player.active = false;
                 }
             }
     	}
@@ -644,7 +645,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		drawAnimatedEntity(context, scene.enemies[x], scene.debug);
 	}
 
-	drawAnimatedEntity(context, scene.player, scene.debug);
+    if (scene.player.active){
+	   drawAnimatedEntity(context, scene.player, scene.debug);
+    }
     
     context.fillStyle = "#ffffff";
     context.font = "20px Frostys";
