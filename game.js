@@ -16,8 +16,8 @@ var manifest = {
 	"animations": {
         "hive"  :{
 			"strip" : "assets/images/sprites/misc/Hive.png",
-			"frames" : 1,
-			"msPerFrame" : 0,
+			"frames" : 3,
+			"msPerFrame" : 70,
 		},
 		"admin-idle-right"  :{
 			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle_right.png",
@@ -218,19 +218,19 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
     scene.itemGirl = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemGirlSprite, 0,0);
-    scene.itemGirl.cost = 30;
+    scene.itemGirl.cost = 25;
     scene.itemPockySprite = game.animations.get("item-pocky");
     scene.itemPocky = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemPockySprite, 0,0);
-    scene.itemPocky.cost = 30;
+    scene.itemPocky.cost = 10;
     scene.itemDvdSprite = game.animations.get("item-dvd");
     scene.itemDvd = new Splat.AnimatedEntity(0, 0, 180, 200, scene.itemDvdSprite, 0,0);
-    scene.itemDvd.cost = 30;
+    scene.itemDvd.cost = 20;
     scene.itemSteamSprite = game.animations.get("item-steam");
     scene.itemSteam = new Splat.AnimatedEntity(0, 0, 260, 200, scene.itemSteamSprite, -10,0);
-    scene.itemSteam.cost = 30;
+    scene.itemSteam.cost = 20;
     scene.itemVrSprite = game.animations.get("item-vr");
     scene.itemVr = new Splat.AnimatedEntity(0, 0, 270, 200, scene.itemVrSprite, -10,0);
-    scene.itemVr.cost = 30;
+    scene.itemVr.cost = 45;
     scene.items.push(scene.itemGirl);
     scene.items.push(scene.itemPocky);
     scene.items.push(scene.itemDvd);
@@ -271,7 +271,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	};
     
     scene.hiveSprite = game.animations.get("hive");
-    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 146, 201, scene.hiveSprite, 0,0);
+    scene.hive = new Splat.AnimatedEntity(canvas.width/2, canvas.height-100, 240, 201, scene.hiveSprite, 0,0);
     
     scene.warriorIdleRight = game.animations.get("warrior-idle-right");
     scene.warriorIdleLeft = game.animations.get("warrior-idle-left");
@@ -430,6 +430,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     	}
     }
     scene.player.move(ellapsedMillis);
+    scene.hive.move(ellapsedMillis);
     scene.warriors.forEach(function(element) {
        element.move(ellapsedMillis); 
     });
@@ -448,6 +449,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         if (scene.items[i].active){
             drawAnimatedEntity(context, scene.items[i], scene.debug);
             context.font = "20px winter";
+            context.fillStyle = "#ffffff";
             context.fillText(scene.items[i].cost, scene.items[i].x, scene.items[i].y);
         }
     }
@@ -497,8 +499,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         context.fillText("VR Headset: Not Found", scene.camera.x + scene.camera.width/2, scene.camera.y + 220);
     }
     context.fillText(Math.round((scene.timers.game.expireMillis-scene.timers.game.time)/1000), scene.camera.x + scene.camera.width/2,  scene.camera.y + 50);
-
-    
 
 }));
 
