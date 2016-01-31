@@ -98,12 +98,8 @@ var placeOnCircle = function(object, circle, offset){
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
 };
 
-<<<<<<< HEAD
-function drawEntity(context, drawable){
-=======
-
 function drawEntity(context, drawable, debug){
->>>>>>> 53ddbacbf9045658e878b243db698a1d21c3687e
+
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
     if(debug){
