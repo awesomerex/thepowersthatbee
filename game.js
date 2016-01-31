@@ -229,6 +229,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     scene.bgImage = game.animations.get("world-bg");
     scene.background = new Splat.AnimatedEntity(0, 0, 0, 0, scene.bgImage, 0, 0);
+    
     scene.items = [];
     scene.itemGirlSprite = game.animations.get("item-girl");
     scene.itemGirl = new Splat.AnimatedEntity(0, 0, 170, 200, scene.itemGirlSprite, 0,0);
@@ -345,7 +346,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             }
         }
         else if (scene.player.warriors > 0){
-          removeWarriors(scene.warriors, 1, scene.player);
+            removeWarriors(scene.warriors, 1, scene.player);
         }
 	}
     if (game.mouse.consumePressed(0)) {
@@ -354,6 +355,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
         }
         else if (scene.player.workers > 0){
           scene.player.workers--; 
+          //drop item if too weak
+            if (scene.player.itemCarried > -1){
+                if (scene.player.workers < scene.items[scene.player.itemCarried].cost){
+                    scene.items[scene.player.itemCarried].x = scene.player.x;
+                    scene.items[scene.player.itemCarried].y = scene.player.y;
+                    scene.items[scene.player.itemCarried].active = true;
+                    scene.player.itemCarried = -1;
+                }
+            }
         }
 	}
 
@@ -386,10 +396,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     if (scene.player.collides(scene.hive)){
         scene.inHive = true;
-        
         if (scene.player.itemCarried > -1){
-            scene.player.itemCarried = -1;
             scene.itemsGotten[scene.player.itemCarried] = true;
+            scene.player.itemCarried = -1;
         }
         
         //Check for Game Win Condition
