@@ -14,13 +14,23 @@ var manifest = {
         } 
 	},
 	"animations": {
-		"admin-idle"  :{
-			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle.png",
+		"admin-idle-right"  :{
+			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle_right.png",
 			"frames" : 2,
 			"msPerFrame" : 100,
 		},
-        "warrior-idle"  :{
-			"strip" : "assets/images/sprites/bees/SMALL_warrior_idle.png",
+        "admin-idle-left"  :{
+			"strip" : "assets/images/sprites/bees/SMALL_administrator_idle_left.png",
+			"frames" : 2,
+			"msPerFrame" : 100,
+		},
+        "warrior-idle-right"  :{
+			"strip" : "assets/images/sprites/bees/SMALL_warrior_idle_right.png",
+			"frames" : 2,
+			"msPerFrame" : 100,
+		},
+        "warrior-idle-left"  :{
+			"strip" : "assets/images/sprites/bees/SMALL_warrior_idle_left.png",
 			"frames" : 2,
 			"msPerFrame" : 100,
 		},
@@ -88,8 +98,8 @@ var placeOnCircle = function(object, circle, offset){
 	object.y = circle.cy + circle.r * Math.cos(circle.theta + offset);
 };
 
-
 function drawEntity(context, drawable, debug){
+
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.width, drawable.height);
     if(debug){
@@ -106,10 +116,9 @@ function drawAnimatedEntity(context, drawable, debug){
     }
 }
 
-function createWarriors(array, num, player){
+function createWarriors(array, num, player, initialSprite){
     for(var x = 0; x < num ; x++){
-        var warriorIdle = game.animations.get("warrior-idle");
-	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, warriorIdle, 0,0);
+	  	var warrior = new Splat.AnimatedEntity(Math.floor(Math.random() * canvas.width) +1, Math.floor(Math.random() * canvas.height) +1, 10, 10, initialSprite, 0,0);
 	 	warrior.type = "warrior";
 	 	array.push(warrior);
         player.warriors++;
@@ -122,7 +131,7 @@ function removeWarriors(array, num, player){
         player.warriors--;
     }
     else{
-        console.log("Tried to remove more warriors than there are");
+        console.log("Tried to remove more warriors than there are.  Do Better");
     }
 }
 
@@ -219,12 +228,14 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
     createEnemy(scene.enemies, scene);
     
-    scene.adminIdle = game.animations.get("admin-idle");
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, scene.adminIdle, 0,0);
+    scene.adminIdleRight = game.animations.get("admin-idle-right");
+    scene.adminIdleLeft = game.animations.get("admin-idle-left");
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 50, 50, scene.adminIdleLeft, 0,0);
 
     scene.player.baseSpeed = 3;
     scene.player.actualSpeed = 3;
     scene.player.minimumSpeed = 0.01;
+    scene.player.facing = 0;    //0:left, 1:right
     scene.player.workers = 0;
     scene.player.warriors = 0;
     scene.player.itemCarried = -1;
@@ -243,6 +254,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     scene.hive = new Splat.Entity(canvas.width/2, canvas.height-100, 50, 50);
     scene.hive.color = "red";
     
+    scene.warriorIdleRight = game.animations.get("warrior-idle-right");
+    scene.warriorIdleLeft = game.animations.get("warrior-idle-left");
 	scene.warriors = [];
     
     scene.gameCamera = new Splat.EntityBoxCamera(scene.player, 500, 500, canvas.width/2 ,canvas.height/2);
@@ -267,9 +280,19 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     
 	if (game.keyboard.isPressed("a")) {
 		scene.player.x -= scene.player.actualSpeed;
+        scene.player.facing = 0;
+        scene.player.sprite = scene.adminIdleLeft;
+        scene.warriors.forEach(function(element) {
+            element.sprite = scene.warriorIdleLeft;
+        });
 	}
 	if (game.keyboard.isPressed("d")) {
 		scene.player.x += scene.player.actualSpeed;
+        scene.player.facing = 1;
+        scene.player.sprite = scene.adminIdleRight;
+        scene.warriors.forEach(function(element) {
+            element.sprite = scene.warriorIdleRight;
+        });
 	}
 	if (game.keyboard.isPressed("w")) {
 		scene.player.y -= scene.player.actualSpeed;
@@ -279,7 +302,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
     if (game.mouse.consumePressed(2)) {
         if (scene.inHive){
-          createWarriors(scene.warriors, 1, scene.player);
+            if (scene.player.facing === 0){
+                createWarriors(scene.warriors, 1, scene.player, scene.warriorIdleLeft);
+            }
+            else{
+                createWarriors(scene.warriors, 1, scene.player, scene.warriorIdleRight);
+            }
         }
         else if (scene.player.warriors > 0){
           removeWarriors(scene.warriors, 1, scene.player);
